@@ -1,0 +1,2 @@
+stop_id,area_id
+garbage_stop,garbage_area

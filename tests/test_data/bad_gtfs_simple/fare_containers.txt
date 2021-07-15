@@ -1,0 +1,10 @@
+fare_container_id,fare_container_name,rider_category_id,amount,minimum_initial_purchase,currency
+,garbage,,,,
+garbage1,,,,,
+garbage2,garbage,garbage,,,
+garbage3,garbage,1,1.50,,
+garbage4,garbage,1,s,,USD
+garbage5,garbage,1,,1.50,
+garbage6,garbage,1,,s3,USD
+garbage7,garbage,1,,,USD
+garbage7,garbage,,,,

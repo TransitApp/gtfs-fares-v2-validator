@@ -1,0 +1,7 @@
+area_id,greater_area_id
+area_1,area_2
+area_2,area_3
+area_3,area_1
+area_4,
+area_4,
+,
