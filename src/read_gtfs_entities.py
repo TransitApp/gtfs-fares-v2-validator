@@ -1,6 +1,7 @@
 import csv
 from os import path
 from .utils import read_csv_file, check_areas_of_file
+from .errors import *
 
 def areas(gtfs_root_dir, errors):
     greater_area_id_by_area_id = {}
@@ -9,17 +10,15 @@ def areas(gtfs_root_dir, errors):
         greater_area_id = line.get('greater_area_id')
 
         if area_id in greater_area_id_by_area_id:
-            error_string = 'An area_id is defined twice in areas.txt: '
-            error_string += area_id + line_num_error_msg
-            errors.append(error_string)
+            add_error(DUPLICATE_AREA_ID, line_num_error_msg, errors)
             return
 
         if not area_id:
-            errors.append('An entry in areas.txt has empty area id.' + line_num_error_msg)
+            add_error(EMPTY_AREA_ID, line_num_error_msg, errors)
             return
 
         greater_area_id_by_area_id[area_id] = greater_area_id
-    
+
     areas_path = path.join(gtfs_root_dir, 'areas.txt')
 
     if not path.isfile(areas_path):
@@ -32,15 +31,13 @@ def areas(gtfs_root_dir, errors):
 
         while greater_area_id:
             if (greater_area_id == area_id):
-                error_string = 'An area_id has itself as a greater_area_id: '
-                error_string += area_id
-                errors.append(error_string)
+                error_info = 'area_id: ' + area_id
+                add_error(GREATER_AREA_ID_LOOP, '', errors, '', error_info)
                 break
 
             if not greater_area_id in greater_area_id_by_area_id:
-                error_string = 'A greater_area_id is not defined as an area_id in areas.txt: '
-                error_string += greater_area_id
-                errors.append(error_string)
+                error_info = 'greater_area_id: ' + greater_area_id
+                add_error(UNDEFINED_GREATER_AREA_ID, '', errors, '', error_info)
                 break
 
             greater_area_id = greater_area_id_by_area_id[greater_area_id]
@@ -81,8 +78,6 @@ def stop_areas(gtfs_root_dir, areas, errors, warnings, should_read_stop_times):
 
     if not stops_exists:
         warnings.append('No stops.txt was found. Will assume stops.txt does not reference any areas.') 
-    if not stop_times_exists:
-        warnings.append('No stop_times.txt was found. Will assume stop_times.txt does not reference any areas.')
 
     unused_areas = areas.copy()
 
@@ -102,13 +97,12 @@ def service_ids(gtfs_root_dir, errors, warnings):
         service_id = line.get('service_id')
 
         if not service_id:
-            errors.append('calendar.txt includes a line with an empty service_id.' + line_num_error_msg)
+            add_error(EMPTY_SERVICE_ID_CALENDAR, line_num_error_msg, errors)
             return
 
         if service_id in service_ids:
-            error_string = 'calendar.txt includes more than one entry with the same service_id: '
-            error_string += service_id + line_num_error_msg
-            errors.append(error_string)
+            error_info = 'service_id: ' + service_id
+            add_error(DUPLICATE_SERVICE_ID, line_num_error_msg, errors, '', error_info)
 
         service_ids.append(service_id)
     
@@ -116,7 +110,7 @@ def service_ids(gtfs_root_dir, errors, warnings):
         service_id = line.get('service_id')
 
         if service_id == '':
-            errors.append('calendar_dates.txt includes a line with an empty service_id.' + line_num_error_msg)
+            add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line_num_error_msg, errors)
             return
 
         if not service_id in service_ids:

@@ -7,7 +7,7 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
     dependent_entities = {}
 
     dependent_entities['areas'] = read_gtfs_entities.areas(gtfs_root_dir, errors)
-    dependent_entities['networks']  = read_gtfs_entities.networks(gtfs_root_dir, warnings)
+    dependent_entities['networks'] = read_gtfs_entities.networks(gtfs_root_dir, warnings)
     read_gtfs_entities.stop_areas(gtfs_root_dir, dependent_entities['areas'], errors, warnings, should_read_stop_times)
     dependent_entities['service_ids'] = read_gtfs_entities.service_ids(gtfs_root_dir, errors, warnings)
     dependent_entities['timeframe_ids'] = read_fares_entities.timeframes(gtfs_root_dir, errors)

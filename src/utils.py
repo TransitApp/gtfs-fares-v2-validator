@@ -1,10 +1,12 @@
 import csv
+from src.errors import add_error
 from .decimals_by_currency import decimals_by_currency
+from .errors import *
 
 def get_filename_of_path(path):
     path_split = path.split('/')
     file = path_split[len(path_split) - 1]
-    return file.split('.')[0]
+    return file
 
 def read_csv_file(path, required_fields, errors, func):
     filename = get_filename_of_path(path)
@@ -13,7 +15,8 @@ def read_csv_file(path, required_fields, errors, func):
 
         for required_field in required_fields:
             if not required_field in reader.fieldnames:
-                errors.append(filename + ' is missing required field ' + required_field)
+                extra_info = 'field: ' + required_field
+                add_error(REQUIRED_FIELD_MISSING, '', errors, filename, extra_info)
                 return False
         
         for line in reader:
@@ -29,23 +32,19 @@ def check_fare_amount(path, line, line_num_error_msg, fare_field, currency_field
 
     if fare:
         if not currency:
-            error_string = filename + ': A fare or other monetary amount has been defined without a currency.'
-            error_string += line_num_error_msg
-            errors.append(error_string)
+            add_error(AMOUNT_WITHOUT_CURRENCY, line_num_error_msg, errors, filename)
             return True
         if not currency in decimals_by_currency:
-            errors.append(filename + ': A currency code is unrecognized.' + line_num_error_msg)
+            add_error(UNRECOGNIZED_CURRENCY_CODE, line_num_error_msg, errors, filename)
             return True
         try:
             float(fare)
             if '.' in fare:
                 num_decimal_points = len(fare.split('.')[1])
                 if num_decimal_points > decimals_by_currency[currency]:
-                    errors.append(filename + ': A fare amount has too many decimal points for its currency.' + line_num_error_msg)
+                    add_error(TOO_MANY_AMOUNT_DECIMALS, line_num_error_msg, errors, filename)
         except Exception:
-            error_string = filename + ': A fare field was defined, but is not an integer or float.'
-            error_string += line_num_error_msg
-            errors.append(error_string)
+            add_error(INVALID_AMOUNT_FORMAT, line_num_error_msg, errors, filename)
         return True
     else:
         return False
@@ -53,17 +52,11 @@ def check_fare_amount(path, line, line_num_error_msg, fare_field, currency_field
 def check_amts(path, line_num_error_msg, min_amt_exists, max_amt_exists, amt_exists, errors):
     filename = get_filename_of_path(path)
     if (min_amt_exists or max_amt_exists) and amt_exists:
-        error_string = filename + ': An entry has amount and at least one of min_ or max_amount defined.'
-        error_string += line_num_error_msg
-        errors.append(error_string)
+        add_error(AMOUNT_WITH_MIN_OR_MAX_AMOUNT, line_num_error_msg, errors, filename)
     if (min_amt_exists and not max_amt_exists) or (max_amt_exists and not min_amt_exists):
-        error_string = filename + ': An entry has a min_ or max_amount defined without its counterpart.'
-        error_string += line_num_error_msg
-        errors.append(error_string)
-    if (not amt_exists and not min_amt_exists and not max_amt_exists) and filename == 'fare_products':
-        error_string = filename + ': An entry has no amount, min_amount, or max_amount.'
-        error_string += line_num_error_msg
-        errors.append(error_string)
+        add_error(MISSING_MIN_OR_MAX_AMOUNT, line_num_error_msg, errors, filename)
+    if (not amt_exists and not min_amt_exists and not max_amt_exists) and filename == 'fare_products.txt':
+        add_error(NO_AMOUNT_DEFINED, line_num_error_msg, errors)
 
 def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, errors):
     with open(path, 'r') as csvfile:
@@ -77,11 +70,8 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, errors):
                     continue
 
                 if not area_id in areas:
-                    error_string = 'A ' + stop_or_stop_time + ' in ' + stop_or_stop_time + 's.txt'
-                    error_string += ' references an area_id that does not exist: '
-                    error_string += ' area_id: ' + area_id
-                    error_string += '\nLine: ' + str(reader.line_num)
-                    errors.append(error_string)
+                    line_num_error_msg = '\nLine: ' + str(reader.line_num)
+                    add_error(NONEXISTENT_AREA_ID, line_num_error_msg, errors, stop_or_stop_time)
                     continue
 
                 if area_id in unused_areas:
@@ -93,9 +83,8 @@ def check_linked_id(path, line, fieldname, defined_ids, line_num_error_msg, erro
         return False
     
     if not line.get(fieldname) in defined_ids:
-        error_string = filename + ': A ' + fieldname + ' is referenced, but it does not exist.'
-        error_string += line_num_error_msg
-        errors.append(error_string)
+        error_info = fieldname + ': '
+        add_error(FOREIGN_ID_INVALID, line_num_error_msg, errors, filename, error_info)
 
     return True
 
@@ -106,29 +95,23 @@ def check_linked_flr_ftr_entities(path, line, line_num_error_msg, rider_categori
     fare_container_id = line.get('fare_container_id')
 
     if fare_product_id and not fare_product_id in linked_entities_by_fare_product:
-        errors.append(filename + ': An entry references a fare product that does not exist.' + line_num_error_msg)
+        add_error(NONEXISTENT_FARE_PRODUCT_ID, line_num_error_msg, errors, filename)
     if rider_category_id and not rider_category_id in rider_categories:
-        errors.append(filename + ': An entry references a rider category that does not exist.' + line_num_error_msg)
+        add_error(NONEXISTENT_RIDER_CATEGORY_ID, line_num_error_msg, errors, filename)
     if fare_container_id and not fare_container_id in rider_category_by_fare_container:
-        errors.append(filename + ': An entry references a fare container that does not exist.' + line_num_error_msg)
+        add_error(NONEXISTENT_FARE_CONTAINER_ID, line_num_error_msg, errors, filename)
     
     if fare_product_id:
         if rider_category_id:
             fp_rider_cat = linked_entities_by_fare_product[fare_product_id].get('rider_category_id')
             if fp_rider_cat and (not fp_rider_cat == rider_category_id):
-                error_string = filename + ': An entry has a conflicting rider_category_id '
-                error_string += ' and fare_product.rider_category_id.' + line_num_error_msg
-                errors.push(error_string)
+                add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT, line_num_error_msg, errors, filename)
         if fare_container_id:
             fp_fare_container = linked_entities_by_fare_product[fare_product_id].get('fare_container_id')
             if fp_fare_container and (not fp_fare_container == fare_container_id):
-                error_string = filename + ': An entry has a conflicting fare_container_id '
-                error_string += ' and fare_product.fare_container_id.' + line_num_error_msg
-                errors.push(error_string)
+                add_error(CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT, line_num_error_msg, errors, filename)
     else:
         if rider_category_id and fare_container_id:
             fc_rider_cat = rider_category_by_fare_container[fare_container_id]
             if fc_rider_cat and (not fc_rider_cat == rider_category_id):
-                error_string = filename + ': An entry has a conflicting rider_category_id '
-                error_string += ' and fare_container.rider_category_id.' + line_num_error_msg
-                errors.push(error_string)
+                add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, line_num_error_msg, errors, filename)

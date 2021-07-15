@@ -1,22 +1,24 @@
+from src.errors import add_error
 from .utils import check_linked_id
+from .errors import *
 
 def check_areas(path, line, line_num_error_msg, areas, errors):
     is_symmetrical = line.get('is_symmetrical')
     if is_symmetrical and (not is_symmetrical in ['0', '1']):
-        errors.append('An is_symmetrical in fare_leg_rules is not one of the accepted values.' + line_num_error_msg)
+        add_error(INVALID_IS_SYMMETRICAL_LEG_RULES, line_num_error_msg, errors)
     
     from_area = line.get('from_area_id')
     to_area = line.get('to_area_id')
     contains_area = line.get('contains_area_id')
 
     if contains_area and (not from_area and not to_area):
-        errors.append('An contains_area in fare_leg_rules is defined without a from and to area.' + line_num_error_msg)
+        add_error(CONTAINS_AREA_WITHOUT_FROM_TO_AREA, line_num_error_msg, errors)
     
     if (from_area or to_area) and not is_symmetrical:
-        errors.append('An from and/or to_ area in fare_leg_rules is defined without is_symmetrical.' + line_num_error_msg)
+        add_error(AREA_WITHOUT_IS_SYMMETRICAL, line_num_error_msg, errors)
     
     if (not from_area and not to_area) and is_symmetrical:
-        errors.append('An is_symmetrical in fare_leg_rules is defined without a from or to area.' + line_num_error_msg)
+        add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_AREA, line_num_error_msg, errors)
 
     check_linked_id(path, line, 'from_area_id', areas, line_num_error_msg, errors)
     check_linked_id(path, line, 'to_area_id', areas, line_num_error_msg, errors)
@@ -28,24 +30,24 @@ def check_distances(line, line_num_error_msg, errors):
     distance_type = line.get('distance_type')
     
     if distance_type and (not distance_type in ['0', '1']):
-        errors.append('A distance_type in fare_leg_rules has an invalid value.' + line_num_error_msg)
+        add_error(INVALID_DISTANCE_TYPE, line_num_error_msg, errors)
 
     if min_distance:
         try:
             dist = float(min_distance)
             if (dist < 0):
-                errors.append('A min_distance in fare_leg_rules is smaller than 0.' + line_num_error_msg)
+                add_error(NEGATIVE_MIN_DISTANCE, line_num_error_msg, errors)
         except ValueError:
-            errors.append('A min_distance in fare_leg_rules is not a float.' + line_num_error_msg)
+            add_error(INVALID_MIN_DISTANCE, line_num_error_msg, errors)
     if max_distance:
         try:
             dist = float(max_distance)
             if (dist < 0):
-                errors.append('A max_distance in fare_leg_rules is smaller than 0.' + line_num_error_msg)
+                add_error(NEGATIVE_MAX_DISTANCE, line_num_error_msg, errors)
         except ValueError:
-            errors.append('A max_distance in fare_leg_rules is not a float.' + line_num_error_msg)
+            add_error(INVALID_MAX_DISTANCE, line_num_error_msg, errors)
     
     if (min_distance or max_distance) and not distance_type:
-        errors.append('A min_distance or max_distance in fare_leg_rules is defined without a distance_type.' + line_num_error_msg)
+        add_error(DISTANCE_WITHOUT_DISTANCE_TYPE, line_num_error_msg, errors)
     if (not min_distance and not max_distance) and distance_type:
-        errors.append('A distance_type in fare_leg_rules is defined without a min_distance or max_distance.' + line_num_error_msg)
+        add_error(DISTANCE_TYPE_WITHOUT_DISTANCE, line_num_error_msg, errors)
