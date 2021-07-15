@@ -1,4 +1,5 @@
 import csv
+from .decimals_by_currency import decimals_by_currency
 
 def get_filename_of_path(path):
     path_split = path.split('/')
@@ -32,13 +33,19 @@ def check_fare_amount(path, line, line_num_error_msg, fare_field, currency_field
             error_string += line_num_error_msg
             errors.append(error_string)
             return True
+        if not currency in decimals_by_currency:
+            errors.append(filename + ': A currency code is unrecognized.' + line_num_error_msg)
+            return True
         try:
             float(fare)
+            if '.' in fare:
+                num_decimal_points = len(fare.split('.')[1])
+                if num_decimal_points > decimals_by_currency[currency]:
+                    errors.append(filename + ': A fare amount has too many decimal points for its currency.' + line_num_error_msg)
         except Exception:
             error_string = filename + ': A fare field was defined, but is not an integer or float.'
             error_string += line_num_error_msg
             errors.append(error_string)
-        # TODO: create a list of acceptable currency codes.
         return True
     else:
         return False

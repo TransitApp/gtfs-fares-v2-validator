@@ -45,7 +45,6 @@ def timeframes(gtfs_root_dir, errors):
             errors.append(invalid_time_string)
 
         if timeframe_id in timeframes:
-            # TODO: add check for overlapping timeframes on same id
             pass
         else:
             timeframes.append(timeframe_id)
