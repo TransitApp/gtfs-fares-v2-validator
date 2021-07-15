@@ -18,7 +18,7 @@ def print_results(errors, warnings):
         for warning in warnings:
             output += '\n' + warning + '\n'
     else:
-        output += 'No warnings to report.'
+        output += '\n\nNo warnings to report.'
 
     return output
 

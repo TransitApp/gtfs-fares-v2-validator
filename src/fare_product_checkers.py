@@ -1,4 +1,5 @@
 from .errors import *
+from .warnings import *
 
 def check_linked_fp_entities(line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors):
     rider_category_id = line.get('rider_category_id')
@@ -81,7 +82,7 @@ def check_durations_and_offsets(line, line_num_error_msg, errors, warnings):
             add_error(OFFSET_AMOUNT_WITH_DURATION_TYPE, line_num_error_msg, errors)
         
         if not offset_unit:
-            warnings.append('An offset_amount in fare_products.txt is defined without an offset_unit, so duration_unit will be used.' + line_num_error_msg)
+            add_warning(OFFSET_AMOUNT_WITHOUT_OFFSET_UNIT, line_num_error_msg, warnings)
     else:
         if offset_unit:
             add_error(OFFSET_UNIT_WITHOUT_AMOUNT, line_num_error_msg, errors)

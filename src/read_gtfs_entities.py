@@ -1,7 +1,8 @@
 import csv
-from os import path
+from os import path, write
 from .utils import read_csv_file, check_areas_of_file
 from .errors import *
+from .warnings import *
 
 def areas(gtfs_root_dir, errors):
     greater_area_id_by_area_id = {}
@@ -48,7 +49,7 @@ def networks(gtfs_root_dir, warnings):
     routes_path = path.join(gtfs_root_dir, 'routes.txt')
 
     if not path.isfile(routes_path):
-        warnings.append('No routes.txt was found, will assume no networks exist.')
+        add_warning(NO_ROUTES, '', warnings)
         return []
 
     networks = []
@@ -77,7 +78,7 @@ def stop_areas(gtfs_root_dir, areas, errors, warnings, should_read_stop_times):
         stop_times_exists = path.isfile(stop_times_path)
 
     if not stops_exists:
-        warnings.append('No stops.txt was found. Will assume stops.txt does not reference any areas.') 
+        add_warning(NO_STOPS, '', warnings)
 
     unused_areas = areas.copy()
 
@@ -87,9 +88,8 @@ def stop_areas(gtfs_root_dir, areas, errors, warnings, should_read_stop_times):
         check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, errors)
     
     if len(unused_areas) > 0:
-        warning_string = 'Areas defined in areas.txt are unused in stops.txt or stop_times.txt: '
-        warning_string += str(unused_areas)
-        warnings.append(warning_string)
+        warning_info = 'Unused areas: ' + str(unused_areas)
+        add_warning(UNUSED_AREAS_IN_STOPS, '', warnings, '', warning_info)
 
 def service_ids(gtfs_root_dir, errors, warnings):
     service_ids = []
@@ -123,7 +123,7 @@ def service_ids(gtfs_root_dir, errors, warnings):
     calendar_dates_exists = path.isfile(calendar_dates_path)
 
     if not calendar_exists and not calendar_dates_exists:
-        warnings.append('Neither calendar.txt or calendar_dates.txt was found, will assume no service_ids for fares data.')
+        add_warning(NO_SERVICE_IDS, '', warnings)
         return service_ids
 
     if calendar_exists:

@@ -6,6 +6,7 @@ from .fare_product_checkers import check_linked_fp_entities, check_bundle, check
 from .fare_leg_rule_checkers import check_areas, check_distances
 from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
 from .errors import *
+from .warnings import *
 
 def timeframes(gtfs_root_dir, errors):
     timeframes = []
@@ -79,7 +80,7 @@ def rider_categories(gtfs_root_dir, errors, warnings):
                 if min_age_int < 0:
                     add_error(NEGATIVE_MIN_AGE, line_num_error_msg, errors)
                 if min_age_int > 100:
-                    warnings.append('A line in rider_categories has a very large min_age.' + line_num_error_msg)
+                    add_warning(VERY_LARGE_MIN_AGE, line_num_error_msg, warnings)
             except ValueError:
                 add_error(NON_INT_MIN_AGE, line_num_error_msg, errors)
         if max_age:
@@ -88,9 +89,9 @@ def rider_categories(gtfs_root_dir, errors, warnings):
                 if max_age_int < 0:
                     add_error(NEGATIVE_MAX_AGE, line_num_error_msg, errors)
                 if max_age_int > 100:
-                    warnings.append('A line in rider_categories has a very large max_age.' + line_num_error_msg)
+                    add_warning(VERY_LARGE_MAX_AGE, line_num_error_msg, warnings)
                 if max_age_int <= min_age_int:
-                    warnings.append('A line in rider_categories has max_age less than or equal to min_age.' + line_num_error_msg)
+                    add_warning(MAX_AGE_LESS_THAN_MIN_AGE, line_num_error_msg, warnings)
             except ValueError:
                 add_error(NON_INT_MAX_AGE, line_num_error_msg, errors)
 
