@@ -1,0 +1,2 @@
+fare_product_ids,fare_product_name,duration_amount,duration_unit,duration_type,offset_amount,offset_unit
+1,test,1,4,1,-1,

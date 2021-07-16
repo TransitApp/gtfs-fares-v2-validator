@@ -72,4 +72,28 @@ def test_errors_fare_products():
     assert len(errors_list) == 13
 
 def test_required_fields():
-    pass
+    results = run_validator(path.join('tests', 'test_data', 'required_fields_test'), False)
+    errors_list = results['errors']
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[0]
+    assert 'areas.txt' in errors_list[0]
+    
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[1]
+    assert 'calendar.txt' in errors_list[1]
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[2]
+    assert 'calendar_dates.txt' in errors_list[2]
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[3]
+    assert 'timeframes.txt' in errors_list[3]
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[4]
+    assert 'rider_categories.txt' in errors_list[4]
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[5]
+    assert 'fare_containers.txt' in errors_list[5]
+
+    assert errors.REQUIRED_FIELD_MISSING in errors_list[6]
+    assert 'fare_products.txt' in errors_list[6]
+
+    assert len(errors_list) == 7
