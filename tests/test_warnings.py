@@ -6,8 +6,6 @@ def test_warnings():
     results = run_validator(path.join('tests', 'test_data', 'warnings_test_gtfs'), True)
     warnings_list = results['warnings']
 
-    print(warnings_list)
-
     # Stops / stop times warnings
     assert warnings.UNUSED_AREAS_IN_STOPS in warnings_list[0]
 
@@ -30,3 +28,20 @@ def test_warnings():
     assert warnings.UNUSED_TIMEFRAME_IDS in warnings_list[8]
 
     assert len(warnings_list) == 9
+
+def test_warnings_nonexistent_files():
+    results = run_validator(path.join('tests', 'test_data', 'no_files'), True)
+    warnings_list = results['warnings']
+
+    assert warnings.NO_AREAS in warnings_list[0]
+    assert warnings.NO_ROUTES in warnings_list[1]
+    assert warnings.NO_STOPS in warnings_list[2]
+    assert warnings.NO_SERVICE_IDS in warnings_list[3]
+    assert warnings.NO_TIMEFRAMES in warnings_list[4]
+    assert warnings.NO_RIDER_CATEGORIES in warnings_list[5]
+    assert warnings.NO_FARE_CONTAINERS in warnings_list[6]
+    assert warnings.NO_FARE_PRODUCTS in warnings_list[7]
+    assert warnings.NO_FARE_LEG_RULES in warnings_list[8]
+    assert warnings.NO_FARE_TRANSFER_RULES in warnings_list[9]
+
+    assert len(warnings_list) == 10

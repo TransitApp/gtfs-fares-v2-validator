@@ -10,7 +10,7 @@ from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_trans
 from .errors import *
 from .warnings import *
 
-def areas(gtfs_root_dir, errors):
+def areas(gtfs_root_dir, errors, warnings):
     greater_area_id_by_area_id = {}
     def for_each_area(line, line_num_error_msg):
         area_id = line.get('area_id')
@@ -29,6 +29,7 @@ def areas(gtfs_root_dir, errors):
     areas_path = path.join(gtfs_root_dir, 'areas.txt')
 
     if not path.isfile(areas_path):
+        add_warning(NO_AREAS, '', warnings)
         return []
 
     read_csv_file(areas_path, ['area_id'], errors, for_each_area)
@@ -51,7 +52,7 @@ def areas(gtfs_root_dir, errors):
 
     return list(greater_area_id_by_area_id.keys())
 
-def timeframes(gtfs_root_dir, errors):
+def timeframes(gtfs_root_dir, errors, warnings):
     timeframes = []
     def for_each_timeframe(line, line_num_error_msg):
         timeframe_id = line.get('timeframe_id')
@@ -96,6 +97,7 @@ def timeframes(gtfs_root_dir, errors):
     timeframes_path = path.join(gtfs_root_dir, 'timeframes.txt')
 
     if not path.isfile(timeframes_path):
+        add_warning(NO_TIMEFRAMES, '', warnings)
         return timeframes
 
     read_csv_file(timeframes_path, ['timeframe_id', 'start_time', 'end_time'], errors, for_each_timeframe)
@@ -141,13 +143,14 @@ def rider_categories(gtfs_root_dir, errors, warnings):
     rider_categories_path = path.join(gtfs_root_dir, 'rider_categories.txt')
 
     if not path.isfile(rider_categories_path):
+        add_warning(NO_RIDER_CATEGORIES, '', warnings)
         return rider_categories
 
     read_csv_file(rider_categories_path, ['rider_category_id'], errors, for_each_rider_category)
 
     return rider_categories
 
-def fare_containers(gtfs_root_dir, rider_categories, errors):
+def fare_containers(gtfs_root_dir, rider_categories, errors, warnings):
     rider_category_by_fare_container = {}
     fare_containers_path = path.join(gtfs_root_dir, 'fare_containers.txt')
 
@@ -180,6 +183,7 @@ def fare_containers(gtfs_root_dir, rider_categories, errors):
         rider_category_by_fare_container[fare_container_id] = rider_category_id
     
     if not path.isfile(fare_containers_path):
+        add_warning(NO_FARE_CONTAINERS, '', warnings)
         return rider_category_by_fare_container
 
     read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'], errors, for_each_fare_container)
@@ -228,6 +232,7 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, errors, 
         check_durations_and_offsets(line, line_num_error_msg, errors, warnings)
 
     if not path.isfile(fare_products_path):
+        add_warning(NO_FARE_PRODUCTS, '', warnings)
         return linked_entities_by_fare_product
     
     read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'], errors, for_each_fare_product)
@@ -281,7 +286,9 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, errors,
         check_linked_flr_ftr_entities(fare_leg_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors)
         
     if path.isfile(fare_leg_rules_path):
-        read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)    
+        read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)
+    else:
+        add_warning(NO_FARE_LEG_RULES, '', warnings)
 
     if len(unused_areas) > 0:
         warning_info = 'Unused areas: ' + str(unused_areas)
@@ -324,6 +331,8 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors, warnings):
     
     if path.isfile(fare_transfer_rules_path):
         read_csv_file(fare_transfer_rules_path, [], errors, for_each_fare_transfer_rule)
+    else:
+        add_warning(NO_FARE_TRANSFER_RULES, '', warnings)
 
     if len(unused_leg_groups) > 0:
         warning_info = 'Unused leg groups: ' + str(unused_leg_groups)
