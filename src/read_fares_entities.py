@@ -259,16 +259,20 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, errors,
             leg_group_ids.append(line.get('leg_group_id'))
 
         check_areas(fare_leg_rules_path, line, line_num_error_msg, areas, unused_areas, errors)
+
         check_linked_id(fare_leg_rules_path, line, 'network_id', networks, line_num_error_msg, errors)
         if line.get('network_id') in unused_networks:
             unused_networks.remove(line.get('network_id'))
+
         check_linked_id(fare_leg_rules_path, line, 'from_timeframe_id', timeframe_ids, line_num_error_msg, errors)
         if line.get('from_timeframe_id') in unused_timeframes:
             unused_timeframes.remove(line.get('from_timeframe_id'))
         check_linked_id(fare_leg_rules_path, line, 'to_timeframe_id', timeframe_ids, line_num_error_msg, errors)
         if line.get('to_timeframe_id') in unused_timeframes:
             unused_timeframes.remove(line.get('to_timeframe_id'))
+
         check_linked_id(fare_leg_rules_path, line, 'service_id', service_ids, line_num_error_msg, errors)
+
         check_distances(line, line_num_error_msg, errors)
 
         min_amt_exists = check_fare_amount(fare_leg_rules_path, line, line_num_error_msg, 'min_amount', 'currency', errors)
