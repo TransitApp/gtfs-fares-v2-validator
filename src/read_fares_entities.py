@@ -280,10 +280,8 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, errors,
         
         check_linked_flr_ftr_entities(fare_leg_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors)
         
-    if not path.isfile(fare_leg_rules_path):
-        return leg_group_ids
-    
-    read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)
+    if path.isfile(fare_leg_rules_path):
+        read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)    
 
     if len(unused_areas) > 0:
         warning_info = 'Unused areas: ' + str(unused_areas)
@@ -324,10 +322,8 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors, warnings):
         
         check_linked_flr_ftr_entities(fare_transfer_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors)
     
-    if not path.isfile(fare_transfer_rules_path):
-        return
-    
-    read_csv_file(fare_transfer_rules_path, [], errors, for_each_fare_transfer_rule)
+    if path.isfile(fare_transfer_rules_path):
+        read_csv_file(fare_transfer_rules_path, [], errors, for_each_fare_transfer_rule)
 
     if len(unused_leg_groups) > 0:
         warning_info = 'Unused leg groups: ' + str(unused_leg_groups)

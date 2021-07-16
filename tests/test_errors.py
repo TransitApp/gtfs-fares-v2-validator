@@ -55,7 +55,6 @@ def test_errors_fare_products():
     results = run_validator(path.join('tests', 'test_data', 'bad_fare_products'), False)
     errors_list = results['errors']
 
-    # Fare products errors
     assert errors.EMPTY_FARE_PRODUCT_ID in errors_list[0]
     assert errors.EMPTY_FARE_PRODUCT_NAME in errors_list[1]
     assert errors.MISSING_MIN_OR_MAX_AMOUNT in errors_list[2]

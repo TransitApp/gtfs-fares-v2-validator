@@ -1,0 +1,3 @@
+leg_group_id,area_id,network_id
+1,1,
+2,,2

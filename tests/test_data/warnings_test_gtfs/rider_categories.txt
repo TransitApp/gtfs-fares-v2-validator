@@ -1,0 +1,3 @@
+rider_category_id,min_age,max_age
+1,45,25
+2,104,106

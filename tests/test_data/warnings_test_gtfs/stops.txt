@@ -1,0 +1,3 @@
+stop_id,area_id
+1,1
+2,1
