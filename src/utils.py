@@ -103,12 +103,12 @@ def check_linked_flr_ftr_entities(path, line, line_num_error_msg, rider_categori
     
     if fare_product_id:
         if rider_category_id:
-            fp_rider_cat = linked_entities_by_fare_product[fare_product_id].get('rider_category_id')
-            if fp_rider_cat and (not fp_rider_cat == rider_category_id):
+            fp_rider_cats = linked_entities_by_fare_product[fare_product_id].get('rider_category_ids')
+            if (len(fp_rider_cats) > 0) and (not rider_category_id in fp_rider_cats):
                 add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT, line_num_error_msg, errors, filename)
         if fare_container_id:
-            fp_fare_container = linked_entities_by_fare_product[fare_product_id].get('fare_container_id')
-            if fp_fare_container and (not fp_fare_container == fare_container_id):
+            fp_fare_containers = linked_entities_by_fare_product[fare_product_id].get('fare_container_ids')
+            if (len(fp_fare_containers) > 0) and (not fare_container_id in fp_fare_containers):
                 add_error(CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT, line_num_error_msg, errors, filename)
     if rider_category_id and fare_container_id:
         fc_rider_cat = rider_category_by_fare_container[fare_container_id]

@@ -2,17 +2,23 @@ from .errors import *
 from .warnings import *
 
 def check_linked_fp_entities(line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors):
+    fare_product_id = line.get('fare_product_id')
     rider_category_id = line.get('rider_category_id')
     fare_container_id = line.get('fare_container_id')
-    linked_entities = {}
+    linked_entities = linked_entities_by_fare_product.get(fare_product_id)
+    if not linked_entities:
+        linked_entities = {
+            'rider_category_ids': [],
+            'fare_container_ids': [],
+        }
 
     if rider_category_id:
-        linked_entities['rider_category_id'] = rider_category_id
+        linked_entities['rider_category_ids'].append(rider_category_id)
         if (not rider_category_id in rider_categories):
             add_error(NONEXISTENT_RIDER_CATEGORY_ID, line_num_error_msg, errors)
     
     if fare_container_id:
-        linked_entities['fare_container_id'] = fare_container_id
+        linked_entities['fare_container_ids'].append(fare_container_id)
         if not fare_container_id in rider_category_by_fare_container:
             add_error(NONEXISTENT_FARE_CONTAINER_ID, line_num_error_msg, errors, 'fare_products.txt')
 
@@ -20,7 +26,7 @@ def check_linked_fp_entities(line, line_num_error_msg, rider_categories, rider_c
         if rider_category_id and fare_container_rider_cat and (rider_category_id != fare_container_rider_cat):
             add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, line_num_error_msg, errors, 'fare_products.txt')
     
-    linked_entities_by_fare_product[line['fare_product_id']] = linked_entities
+    linked_entities_by_fare_product[fare_product_id] = linked_entities
 
 def check_bundle(line, line_num_error_msg, errors):
     if line.get('bundle_amount'):
