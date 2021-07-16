@@ -83,7 +83,7 @@ def check_linked_id(path, line, fieldname, defined_ids, line_num_error_msg, erro
         return False
     
     if not line.get(fieldname) in defined_ids:
-        error_info = fieldname + ': '
+        error_info = fieldname + ': ' + line.get(fieldname)
         add_error(FOREIGN_ID_INVALID, line_num_error_msg, errors, filename, error_info)
 
     return True

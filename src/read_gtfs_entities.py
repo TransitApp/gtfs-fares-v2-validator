@@ -1,49 +1,10 @@
+# Reads files introduced as part of the original GTFS specification
+
 import csv
 from os import path, write
 from .utils import read_csv_file, check_areas_of_file
 from .errors import *
 from .warnings import *
-
-def areas(gtfs_root_dir, errors):
-    greater_area_id_by_area_id = {}
-    def for_each_area(line, line_num_error_msg):
-        area_id = line.get('area_id')
-        greater_area_id = line.get('greater_area_id')
-
-        if area_id in greater_area_id_by_area_id:
-            add_error(DUPLICATE_AREA_ID, line_num_error_msg, errors)
-            return
-
-        if not area_id:
-            add_error(EMPTY_AREA_ID, line_num_error_msg, errors)
-            return
-
-        greater_area_id_by_area_id[area_id] = greater_area_id
-
-    areas_path = path.join(gtfs_root_dir, 'areas.txt')
-
-    if not path.isfile(areas_path):
-        return []
-
-    read_csv_file(areas_path, ['area_id'], errors, for_each_area)
-
-    for area_id in greater_area_id_by_area_id:
-        greater_area_id = greater_area_id_by_area_id[area_id]
-
-        while greater_area_id:
-            if (greater_area_id == area_id):
-                error_info = 'area_id: ' + area_id
-                add_error(GREATER_AREA_ID_LOOP, '', errors, '', error_info)
-                break
-
-            if not greater_area_id in greater_area_id_by_area_id:
-                error_info = 'greater_area_id: ' + greater_area_id
-                add_error(UNDEFINED_GREATER_AREA_ID, '', errors, '', error_info)
-                break
-
-            greater_area_id = greater_area_id_by_area_id[greater_area_id]
-
-    return list(greater_area_id_by_area_id.keys())
 
 def networks(gtfs_root_dir, warnings):
     routes_path = path.join(gtfs_root_dir, 'routes.txt')

@@ -2,7 +2,7 @@ from src.errors import add_error
 from .utils import check_linked_id
 from .errors import *
 
-def check_areas(path, line, line_num_error_msg, areas, errors):
+def check_areas(path, line, line_num_error_msg, areas, unused_areas, errors):
     is_symmetrical = line.get('is_symmetrical')
     if is_symmetrical and (not is_symmetrical in ['0', '1']):
         add_error(INVALID_IS_SYMMETRICAL_LEG_RULES, line_num_error_msg, errors)
@@ -19,6 +19,11 @@ def check_areas(path, line, line_num_error_msg, areas, errors):
     
     if (not from_area and not to_area) and is_symmetrical:
         add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_AREA, line_num_error_msg, errors)
+    
+    if from_area and from_area in unused_areas:
+        unused_areas.remove(from_area)
+    if to_area and to_area in unused_areas:
+        unused_areas.remove(from_area)
 
     check_linked_id(path, line, 'from_area_id', areas, line_num_error_msg, errors)
     check_linked_id(path, line, 'to_area_id', areas, line_num_error_msg, errors)

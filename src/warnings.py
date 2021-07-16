@@ -1,3 +1,8 @@
+# generic warnings
+UNUSED_AREA_IDS = 'Areas defined in areas.txt are unused in other fares files.'
+UNUSED_NETWORK_IDS = 'Networks defined in routes.txt are unused in other fares files.'
+UNUSED_TIMEFRAME_IDS = 'Timeframes defined in timeframes.txt are unused in other fares files.'
+
 # routes.txt
 NO_ROUTES = 'No routes.txt was found, will assume no networks exist.'
 
@@ -15,6 +20,9 @@ VERY_LARGE_MIN_AGE = 'An entry in rider_categories.txt has a very large min_age.
 
 # fare_products.txt
 OFFSET_AMOUNT_WITHOUT_OFFSET_UNIT = 'An offset_amount in fare_products.txt is defined without an offset_unit, so duration_unit will be used.'
+
+# fare_transfer_rules.txt
+UNUSED_LEG_GROUPS = 'Leg groups defined in fare_leg_rules.txt are unused in fare_transfer_rules.txt.'
 
 def add_warning(warning, line_num_error_msg, warnings, path='', extra_info=''):
     warning_msg = ''

@@ -1,6 +1,6 @@
 from .errors import *
 
-def check_leg_groups(line, line_num_error_msg, leg_group_ids, errors):
+def check_leg_groups(line, line_num_error_msg, leg_group_ids, unused_leg_groups, errors):
     from_leg_group = line.get('from_leg_group_id')
     to_leg_group = line.get('to_leg_group_id')
     is_symmetrical = line.get('is_symmetrical')
@@ -12,9 +12,14 @@ def check_leg_groups(line, line_num_error_msg, leg_group_ids, errors):
     if (not from_leg_group and not to_leg_group) and is_symmetrical:
         add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_LEG_GROUP, line_num_error_msg, errors)
     if from_leg_group and not from_leg_group in leg_group_ids:
-        add_error(INVALID_FROM_LEG_GROUP, line_num_error_msg, errors)
+        add_error(INVALID_FROM_LEG_GROUP, line_num_error_msg, errors)       
     if to_leg_group and not to_leg_group in leg_group_ids:
         add_error(INVALID_TO_LEG_GROUP, line_num_error_msg, errors)
+
+    if from_leg_group in unused_leg_groups:
+        unused_leg_groups.remove(from_leg_group)
+    if to_leg_group in unused_leg_groups:
+        unused_leg_groups.remove(to_leg_group)
 
 def check_spans_and_transfer_ids(line, line_num_error_msg, errors):
     spanning_limit = line.get('spanning_limit')

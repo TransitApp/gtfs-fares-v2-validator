@@ -1,3 +1,5 @@
+# Reads files introduced as part of the GTFS fares-v2 specification
+
 import re
 from os import path
 
@@ -7,6 +9,47 @@ from .fare_leg_rule_checkers import check_areas, check_distances
 from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
 from .errors import *
 from .warnings import *
+
+def areas(gtfs_root_dir, errors):
+    greater_area_id_by_area_id = {}
+    def for_each_area(line, line_num_error_msg):
+        area_id = line.get('area_id')
+        greater_area_id = line.get('greater_area_id')
+
+        if area_id in greater_area_id_by_area_id:
+            add_error(DUPLICATE_AREA_ID, line_num_error_msg, errors)
+            return
+
+        if not area_id:
+            add_error(EMPTY_AREA_ID, line_num_error_msg, errors)
+            return
+
+        greater_area_id_by_area_id[area_id] = greater_area_id
+
+    areas_path = path.join(gtfs_root_dir, 'areas.txt')
+
+    if not path.isfile(areas_path):
+        return []
+
+    read_csv_file(areas_path, ['area_id'], errors, for_each_area)
+
+    for area_id in greater_area_id_by_area_id:
+        greater_area_id = greater_area_id_by_area_id[area_id]
+
+        while greater_area_id:
+            if (greater_area_id == area_id):
+                error_info = 'area_id: ' + area_id
+                add_error(GREATER_AREA_ID_LOOP, '', errors, '', error_info)
+                break
+
+            if not greater_area_id in greater_area_id_by_area_id:
+                error_info = 'greater_area_id: ' + greater_area_id
+                add_error(UNDEFINED_GREATER_AREA_ID, '', errors, '', error_info)
+                break
+
+            greater_area_id = greater_area_id_by_area_id[greater_area_id]
+
+    return list(greater_area_id_by_area_id.keys())
 
 def timeframes(gtfs_root_dir, errors):
     timeframes = []
@@ -143,7 +186,7 @@ def fare_containers(gtfs_root_dir, rider_categories, errors):
 
     return rider_category_by_fare_container
 
-def fare_products(gtfs_root_dir, dependent_entities, errors, warnings):
+def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, errors, warnings):
     linked_entities_by_fare_product = {}
     
     service_ids = dependent_entities['service_ids']
@@ -173,6 +216,8 @@ def fare_products(gtfs_root_dir, dependent_entities, errors, warnings):
         check_bundle(line, line_num_error_msg, errors)
         check_linked_id(path, line, 'service_id', service_ids, line_num_error_msg, errors)
         timeframe_exists = check_linked_id(path, line, 'timeframe_id', timeframe_ids, line_num_error_msg, errors)
+        if line.get('timeframe_id') in unused_timeframes:
+            unused_timeframes.remove(line.get('timeframe_id'))
         if timeframe_exists:
             if not line.get('timeframe_type') in ['0', '1']:
                 add_error(INVALID_TIMEFRAME_TYPE, line_num_error_msg, errors)
@@ -189,11 +234,13 @@ def fare_products(gtfs_root_dir, dependent_entities, errors, warnings):
 
     return linked_entities_by_fare_product
 
-def fare_leg_rules(gtfs_root_dir, dependent_entities, errors):
+def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, errors, warnings):
     leg_group_ids = []
 
     areas =  dependent_entities['areas']
+    unused_areas = areas.copy()
     networks =  dependent_entities['networks']
+    unused_networks = networks.copy()
     service_ids = dependent_entities['service_ids']
     timeframe_ids = dependent_entities['timeframe_ids']
     rider_categories = dependent_entities['rider_category_ids']
@@ -206,10 +253,16 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, errors):
         if line.get('leg_group_id') and not line.get('leg_group_id') in leg_group_ids:
             leg_group_ids.append(line.get('leg_group_id'))
 
-        check_areas(fare_leg_rules_path, line, line_num_error_msg, areas, errors)
+        check_areas(fare_leg_rules_path, line, line_num_error_msg, areas, unused_areas, errors)
         check_linked_id(fare_leg_rules_path, line, 'network_id', networks, line_num_error_msg, errors)
+        if line.get('network_id') in unused_networks:
+            unused_networks.remove(line.get('network_id'))
         check_linked_id(fare_leg_rules_path, line, 'from_timeframe_id', timeframe_ids, line_num_error_msg, errors)
+        if line.get('from_timeframe_id') in unused_timeframes:
+            unused_timeframes.remove(line.get('from_timeframe_id'))
         check_linked_id(fare_leg_rules_path, line, 'to_timeframe_id', timeframe_ids, line_num_error_msg, errors)
+        if line.get('to_timeframe_id') in unused_timeframes:
+            unused_timeframes.remove(line.get('to_timeframe_id'))
         check_linked_id(fare_leg_rules_path, line, 'service_id', service_ids, line_num_error_msg, errors)
         check_distances(line, line_num_error_msg, errors)
 
@@ -232,10 +285,18 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, errors):
     
     read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)
 
+    if len(unused_areas) > 0:
+        warning_info = 'Unused areas: ' + str(unused_areas)
+        add_warning(UNUSED_AREA_IDS, '', warnings, '', warning_info)
+    if len(unused_networks) > 0:
+        warning_info = 'Unused networks: ' + str(unused_networks)
+        add_warning(UNUSED_NETWORK_IDS, '', warnings, '', warning_info)
+
     return leg_group_ids
 
-def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors):
+def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors, warnings):
     leg_group_ids = dependent_entities['leg_group_ids']
+    unused_leg_groups = leg_group_ids.copy()
     rider_categories = dependent_entities['rider_category_ids']
     rider_category_by_fare_container = dependent_entities['rider_category_by_fare_container']
     linked_entities_by_fare_product = dependent_entities['linked_entities_by_fare_product']
@@ -243,7 +304,7 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors):
     fare_transfer_rules_path = path.join(gtfs_root_dir, 'fare_transfer_rules.txt')
 
     def for_each_fare_transfer_rule(line, line_num_error_msg):
-        check_leg_groups(line, line_num_error_msg, leg_group_ids, errors)
+        check_leg_groups(line, line_num_error_msg, leg_group_ids, unused_leg_groups, errors)
         check_spans_and_transfer_ids(line, line_num_error_msg, errors)
         check_durations(line, line_num_error_msg, errors)
 
@@ -267,3 +328,7 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors):
         return
     
     read_csv_file(fare_transfer_rules_path, [], errors, for_each_fare_transfer_rule)
+
+    if len(unused_leg_groups) > 0:
+        warning_info = 'Unused leg groups: ' + str(unused_leg_groups)
+        add_warning(UNUSED_LEG_GROUPS, '', warnings, '', warning_info)
