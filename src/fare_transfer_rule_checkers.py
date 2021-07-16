@@ -36,7 +36,7 @@ def check_spans_and_transfer_ids(line, line_num_error_msg, errors):
             if limit < 0 or limit == 1:
                 add_error(INVALID_SPANNING_LIMIT, line_num_error_msg, errors)
         except ValueError:
-            add_error(INVALID_SPANNING_LIMIT + line_num_error_msg, errors)
+            add_error(INVALID_SPANNING_LIMIT, line_num_error_msg, errors)
     
     if transfer_id:
         if not transfer_seq:

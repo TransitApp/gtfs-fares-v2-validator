@@ -1,6 +1,6 @@
 from run_validator import run_validator
 from src import errors
-from os import path
+from os import error, path
 
 def test_errors_simple_files():
     results = run_validator(path.join('tests', 'test_data', 'bad_gtfs_simple'), True)
@@ -117,6 +117,51 @@ def test_errors_fare_leg_rules():
     assert errors.CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER in errors_list[26]
 
     assert len(errors_list) == 27
+
+def test_errors_fare_transfer_rules():
+    results = run_validator(path.join('tests', 'test_data', 'bad_fare_transfer_rules'), False)
+    errors_list = results['errors']
+
+    # check leg groups
+    assert errors.IS_SYMMETRICAL_WITHOUT_FROM_TO_LEG_GROUP in errors_list[0]
+    assert errors.LEG_GROUP_WITHOUT_IS_SYMMETRICAL in errors_list[1]
+    assert errors.INVALID_IS_SYMMETRICAL_TRANSFER_RULES in errors_list[2]
+    assert errors.INVALID_TO_LEG_GROUP in errors_list[3]
+    assert errors.INVALID_FROM_LEG_GROUP in errors_list[4]
+
+    # check transfer_id and spans
+    assert errors.SPANNING_LIMIT_WITH_BAD_LEGS in errors_list[5]
+    assert errors.INVALID_SPANNING_LIMIT in errors_list[6]
+    assert errors.INVALID_SPANNING_LIMIT in errors_list[7]
+    assert errors.SPANNING_LIMIT_WITH_TRANSFER_ID in errors_list[8]
+    assert errors.TRANSFER_ID_WITHOUT_TRANSFER_SEQUENCE in errors_list[9]
+    assert errors.TRANSFER_SEQUENCE_WITHOUT_TRANSFER_ID in errors_list[10]
+    assert errors.INVALID_TRANSFER_SEQUENCE in errors_list[11]
+    assert errors.INVALID_TRANSFER_SEQUENCE in errors_list[12]
+
+    # check durations
+    assert errors.INVALID_DURATION_LIMIT_TYPE in errors_list[13]
+    assert errors.DURATION_LIMIT_WITHOUT_LIMIT_TYPE in errors_list[14]
+    assert errors.INVALID_DURATION_LIMIT in errors_list[15]
+    assert errors.DURATION_LIMIT_TYPE_WITHOUT_DURATION in errors_list[16]
+
+    # check amounts
+    assert errors.CURRENCY_WITHOUT_AMOUNT in errors_list[17]
+    assert errors.AMOUNT_WITHOUT_CURRENCY in errors_list[18]
+    assert errors.AMOUNT_WITHOUT_FARE_TRANSFER_TYPE in errors_list[19]
+    assert errors.INVALID_FARE_TRANSFER_TYPE in errors_list[20]
+    assert errors.UNRECOGNIZED_CURRENCY_CODE in errors_list[21]
+    assert errors.FARE_TRANSFER_TYPE_WITHOUT_AMOUNT in errors_list[22]
+
+    # check linked entities
+    assert errors.NONEXISTENT_FARE_PRODUCT_ID in errors_list[23]
+    assert errors.NONEXISTENT_RIDER_CATEGORY_ID in errors_list[24]
+    assert errors.NONEXISTENT_FARE_CONTAINER_ID in errors_list[25]
+    assert errors.CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT in errors_list[26]
+    assert errors.CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT in errors_list[27]
+    assert errors.CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER in errors_list[28]
+
+    assert len(errors_list) == 29
 
 def test_required_fields():
     results = run_validator(path.join('tests', 'test_data', 'required_fields_test'), False)
