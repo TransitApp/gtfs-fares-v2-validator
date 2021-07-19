@@ -9,6 +9,7 @@ from .fare_leg_rule_checkers import check_areas, check_distances
 from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
 from .errors import *
 from .warnings import *
+from .expected_fields import *
 
 def areas(gtfs_root_dir, errors, warnings):
     greater_area_id_by_area_id = {}
@@ -32,7 +33,7 @@ def areas(gtfs_root_dir, errors, warnings):
         add_warning(NO_AREAS, '', warnings)
         return []
 
-    read_csv_file(areas_path, ['area_id'], errors, for_each_area)
+    read_csv_file(areas_path, ['area_id'], EXPECTED_AREAS_FIELDS, errors, warnings, for_each_area)
 
     for area_id in greater_area_id_by_area_id:
         greater_area_id = greater_area_id_by_area_id[area_id]
@@ -100,7 +101,7 @@ def timeframes(gtfs_root_dir, errors, warnings):
         add_warning(NO_TIMEFRAMES, '', warnings)
         return timeframes
 
-    read_csv_file(timeframes_path, ['timeframe_id', 'start_time', 'end_time'], errors, for_each_timeframe)
+    read_csv_file(timeframes_path, ['timeframe_id', 'start_time', 'end_time'], EXPECTED_TIMEFRAMES_FIELDS, errors, warnings, for_each_timeframe)
 
     return timeframes
 
@@ -146,7 +147,7 @@ def rider_categories(gtfs_root_dir, errors, warnings):
         add_warning(NO_RIDER_CATEGORIES, '', warnings)
         return rider_categories
 
-    read_csv_file(rider_categories_path, ['rider_category_id'], errors, for_each_rider_category)
+    read_csv_file(rider_categories_path, ['rider_category_id'], EXPECTED_RIDER_CATEGORIES_FIELDS, errors, warnings, for_each_rider_category)
 
     return rider_categories
 
@@ -186,7 +187,7 @@ def fare_containers(gtfs_root_dir, rider_categories, errors, warnings):
         add_warning(NO_FARE_CONTAINERS, '', warnings)
         return rider_category_by_fare_container
 
-    read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'], errors, for_each_fare_container)
+    read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'], EXPECTED_FARE_CONTAINERS_FIELDS, errors, warnings, for_each_fare_container)
 
     return rider_category_by_fare_container
 
@@ -235,7 +236,7 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, errors, 
         add_warning(NO_FARE_PRODUCTS, '', warnings)
         return linked_entities_by_fare_product
     
-    read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'], errors, for_each_fare_product)
+    read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'], EXPECTED_FARE_PRODUCTS_FIELDS, errors, warnings, for_each_fare_product)
 
     return linked_entities_by_fare_product
 
@@ -290,7 +291,7 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, errors,
         check_linked_flr_ftr_entities(fare_leg_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors)
         
     if path.isfile(fare_leg_rules_path):
-        read_csv_file(fare_leg_rules_path, [], errors, for_each_fare_leg_rule)
+        read_csv_file(fare_leg_rules_path, [], EXPECTED_FARE_LEG_RULES_FIELDS, errors, warnings, for_each_fare_leg_rule)
     else:
         add_warning(NO_FARE_LEG_RULES, '', warnings)
 
@@ -334,7 +335,7 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, errors, warnings):
         check_linked_flr_ftr_entities(fare_transfer_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, errors)
     
     if path.isfile(fare_transfer_rules_path):
-        read_csv_file(fare_transfer_rules_path, [], errors, for_each_fare_transfer_rule)
+        read_csv_file(fare_transfer_rules_path, [], EXPECTED_FARE_TRANSFER_RULES_FIELDS, errors, warnings, for_each_fare_transfer_rule)
     else:
         add_warning(NO_FARE_TRANSFER_RULES, '', warnings)
 

@@ -2,13 +2,14 @@ import csv
 from src.errors import add_error
 from .decimals_by_currency import decimals_by_currency
 from .errors import *
+from .warnings import *
 
 def get_filename_of_path(path):
     path_split = path.split('/')
     file = path_split[len(path_split) - 1]
     return file
 
-def read_csv_file(path, required_fields, errors, func):
+def read_csv_file(path, required_fields, expected_fields, errors, warnings, func):
     filename = get_filename_of_path(path)
     with open(path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -18,7 +19,16 @@ def read_csv_file(path, required_fields, errors, func):
                 extra_info = 'field: ' + required_field
                 add_error(REQUIRED_FIELD_MISSING, '', errors, filename, extra_info)
                 return False
-        
+
+        if len(expected_fields) > 0:
+            unexpected_fields = []
+            for field in reader.fieldnames:
+                if not field in expected_fields:
+                    unexpected_fields.append(field)
+            if len(unexpected_fields) > 0:
+                extra_info = '\nColumn(s): ' + str(unexpected_fields)
+                add_warning(UNEXPECTED_FIELDS, '', warnings, filename, extra_info)
+
         for line in reader:
             line_num_error_msg = '\nLine: ' + str(reader.line_num)
             func(line, line_num_error_msg)

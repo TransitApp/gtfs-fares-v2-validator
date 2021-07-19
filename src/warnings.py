@@ -1,4 +1,5 @@
 # generic warnings
+UNEXPECTED_FIELDS = 'A GTFS fares-v2 file has column name(s) not defined in the specification.'
 UNUSED_AREA_IDS = 'Areas defined in areas.txt are unused in other fares files.'
 UNUSED_NETWORK_IDS = 'Networks defined in routes.txt are unused in other fares files.'
 UNUSED_TIMEFRAME_IDS = 'Timeframes defined in timeframes.txt are unused in other fares files.'

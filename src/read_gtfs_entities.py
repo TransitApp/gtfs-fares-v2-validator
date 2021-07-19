@@ -88,9 +88,9 @@ def service_ids(gtfs_root_dir, errors, warnings):
         return service_ids
 
     if calendar_exists:
-        read_csv_file(calendar_path, ['service_id'], errors, for_each_calendar)
+        read_csv_file(calendar_path, ['service_id'], [], errors, warnings, for_each_calendar)
 
     if calendar_dates_exists:
-        read_csv_file(calendar_dates_path, ['service_id'], errors, for_each_calendar_date)
+        read_csv_file(calendar_dates_path, ['service_id'], [], errors, warnings, for_each_calendar_date)
 
     return service_ids
