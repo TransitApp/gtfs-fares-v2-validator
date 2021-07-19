@@ -2,7 +2,7 @@
 
 This is a tool to validate fares-v2 GTFS datasets.
 
-The fares-v2 specification can be found here: https://docs.google.com/document/d/19j-f-wZ5C_kYXmkLBye1g42U-kvfSVgYLkkG5oyBauY/edit#
+This tool is based on the fares-v2 [draft specification](https://docs.google.com/document/d/19j-f-wZ5C_kYXmkLBye1g42U-kvfSVgYLkkG5oyBauY/edit#).
 
 The tool validates ONLY fares-v2 specific files and dependent files, and does NOT validate GTFS schedule data.
 
