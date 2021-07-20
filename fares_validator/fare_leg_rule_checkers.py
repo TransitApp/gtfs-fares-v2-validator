@@ -1,4 +1,3 @@
-from src.errors import add_error
 from .utils import check_linked_id
 from .errors import *
 

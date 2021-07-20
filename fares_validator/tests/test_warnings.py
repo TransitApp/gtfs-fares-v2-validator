@@ -1,9 +1,11 @@
-from run_validator import run_validator
-from src import warnings
-from os import path
+from fares_validator.loader import run_validator
+from fares_validator import warnings
+from pathlib import Path
+
+test_data_dir = Path(__file__).parent / 'test_data'
 
 def test_warnings():
-    results = run_validator(path.join('tests', 'test_data', 'warnings_test_gtfs'), True)
+    results = run_validator(test_data_dir / 'warnings_test_gtfs', True)
     warnings_list = results['warnings']
 
     # Stops / stop times warnings
@@ -30,7 +32,7 @@ def test_warnings():
     assert len(warnings_list) == 9
 
 def test_warnings_nonexistent_files():
-    results = run_validator(path.join('tests', 'test_data', 'no_files'), True)
+    results = run_validator(test_data_dir / 'no_files', True)
     warnings_list = results['warnings']
 
     assert warnings.NO_AREAS in warnings_list[0]

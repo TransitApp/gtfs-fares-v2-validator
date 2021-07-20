@@ -1,9 +1,11 @@
-from run_validator import run_validator
-from src import errors
-from os import error, path
+from fares_validator.loader import run_validator
+from fares_validator import errors
+from pathlib import Path
+
+test_data_dir = Path(__file__).parent / 'test_data' 
 
 def test_errors_simple_files():
-    results = run_validator(path.join('tests', 'test_data', 'bad_gtfs_simple'), True)
+    results = run_validator(test_data_dir / 'bad_gtfs_simple', True)
     errors_list = results['errors']
     
     # Areas errors
@@ -52,7 +54,7 @@ def test_errors_simple_files():
     assert len(errors_list) == 29
 
 def test_errors_fare_products():
-    results = run_validator(path.join('tests', 'test_data', 'bad_fare_products'), False)
+    results = run_validator(test_data_dir / 'bad_fare_products', False)
     errors_list = results['errors']
 
     assert errors.EMPTY_FARE_PRODUCT_ID in errors_list[0]
@@ -72,7 +74,7 @@ def test_errors_fare_products():
     assert len(errors_list) == 13
 
 def test_errors_fare_leg_rules():
-    results = run_validator(path.join('tests', 'test_data', 'bad_fare_leg_rules'), False)
+    results = run_validator(test_data_dir / 'bad_fare_leg_rules', False)
     errors_list = results['errors']
 
     # check areas
@@ -119,7 +121,7 @@ def test_errors_fare_leg_rules():
     assert len(errors_list) == 27
 
 def test_errors_fare_transfer_rules():
-    results = run_validator(path.join('tests', 'test_data', 'bad_fare_transfer_rules'), False)
+    results = run_validator(test_data_dir / 'bad_fare_transfer_rules', False)
     errors_list = results['errors']
 
     # check leg groups
@@ -164,7 +166,7 @@ def test_errors_fare_transfer_rules():
     assert len(errors_list) == 29
 
 def test_required_fields():
-    results = run_validator(path.join('tests', 'test_data', 'required_fields_test'), False)
+    results = run_validator(test_data_dir / 'required_fields_test', False)
     errors_list = results['errors']
 
     assert errors.REQUIRED_FIELD_MISSING in errors_list[0]

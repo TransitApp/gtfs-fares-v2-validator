@@ -1,5 +1,4 @@
 import csv
-from src.errors import add_error
 from .decimals_by_currency import decimals_by_currency
 from .errors import *
 from .warnings import *

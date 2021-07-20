@@ -1,7 +1,9 @@
-# Reads files introduced as part of the original GTFS specification
+"""
+Reads files introduced as part of the original GTFS specification
+"""
 
 import csv
-from os import path, write
+from os import path
 from .utils import read_csv_file, check_areas_of_file
 from .errors import *
 from .warnings import *
@@ -24,7 +26,7 @@ def networks(gtfs_root_dir, warnings):
         for line in reader:
             network_id = line.get('network_id')
             
-            if network_id and (not network_id in networks):
+            if network_id and network_id not in networks:
                 networks.append(network_id)
 
     return networks
