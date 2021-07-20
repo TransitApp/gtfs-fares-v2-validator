@@ -39,14 +39,3 @@ NO_FARE_LEG_RULES = 'No fare_leg_rules.txt was found, will assume no fare_leg_ru
 # fare_transfer_rules.txt
 NO_FARE_TRANSFER_RULES = 'No fare_transfer_rules.txt was found, will assume no fare_transfer_rules exist.'
 UNUSED_LEG_GROUPS = 'Leg groups defined in fare_leg_rules.txt are unused in fare_transfer_rules.txt.'
-
-def add_warning(warning, line_num_error_msg, warnings, path='', extra_info=''):
-    warning_msg = ''
-    if path:
-        warning_msg += path + ': '
-    warning_msg += warning
-    if extra_info:
-        warning_msg += '\n' + extra_info
-    warning_msg += line_num_error_msg
-
-    warnings.append(warning_msg)

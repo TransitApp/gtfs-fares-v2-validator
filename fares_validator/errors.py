@@ -101,14 +101,3 @@ SPANNING_LIMIT_WITH_BAD_LEGS = 'An entry in fare_transfer_rules.txt has spanning
 SPANNING_LIMIT_WITH_TRANSFER_ID = 'An entry in fare_transfer_rules.txt has spanning_limit with transfer_id defined.'
 TRANSFER_ID_WITHOUT_TRANSFER_SEQUENCE = 'A transfer_id in fare_transfer_rules.txt is defined without a transfer_sequence.'
 TRANSFER_SEQUENCE_WITHOUT_TRANSFER_ID = 'A transfer_sequence in fare_transfer_rules.txt is defined without a transfer_id.'
-
-def add_error(error, line_num_error_msg, errors, path='', extra_info=''):
-    error_msg = ''
-    if path:
-        error_msg += path + ': '
-    error_msg += error
-    if extra_info:
-        error_msg += '\n' + extra_info
-    error_msg += line_num_error_msg
-
-    errors.append(error_msg)

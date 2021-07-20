@@ -15,12 +15,9 @@ def main():
     if not path.isdir(gtfs_path):
         raise Exception('Input path is not a valid folder.')
 
-    read_stop_times = False
-    if args.read_stop_times:
-        read_stop_times = True
-
+    read_stop_times = args.read_stop_times
     results = run_validator(gtfs_path, read_stop_times)
-    output = print_results(results['errors'], results['warnings'])
+    output = results.to_string()
 
     if args.output_file:
         try:
@@ -32,25 +29,7 @@ def main():
         print(output)
 
 
-def print_results(errors, warnings):
-    output = ''
-    if len(errors):
-        output += 'ERRORS:\n'
 
-        for error in errors:
-            output += '\n' + error + '\n'
-    else:
-        output += 'No errors detected.\n'
-
-    if len(warnings):
-        output += '\n\nWARNINGS:\n'
-
-        for warning in warnings:
-            output += '\n' + warning + '\n'
-    else:
-        output += '\n\nNo warnings to report.'
-
-    return output
 
 
 if __name__ == '__main__':

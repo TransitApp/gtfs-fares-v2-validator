@@ -8,11 +8,11 @@ from .utils import read_csv_file, check_areas_of_file
 from .errors import *
 from .warnings import *
 
-def networks(gtfs_root_dir, warnings):
+def networks(gtfs_root_dir, messages):
     routes_path = path.join(gtfs_root_dir, 'routes.txt')
 
     if not path.isfile(routes_path):
-        add_warning(NO_ROUTES, '', warnings)
+        messages.add_warning(NO_ROUTES, '')
         return []
 
     networks = []
@@ -20,7 +20,7 @@ def networks(gtfs_root_dir, warnings):
     with open(routes_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
-        if not 'network_id' in reader.fieldnames:
+        if 'network_id' not in reader.fieldnames:
             return networks
 
         for line in reader:
@@ -31,7 +31,7 @@ def networks(gtfs_root_dir, warnings):
 
     return networks
 
-def stop_areas(gtfs_root_dir, areas, errors, warnings, should_read_stop_times):
+def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
     stops_path = path.join(gtfs_root_dir, 'stops.txt')
     stop_times_path = path.join(gtfs_root_dir, 'stop_times.txt')
 
@@ -41,31 +41,31 @@ def stop_areas(gtfs_root_dir, areas, errors, warnings, should_read_stop_times):
         stop_times_exists = path.isfile(stop_times_path)
 
     if not stops_exists:
-        add_warning(NO_STOPS, '', warnings)
+        messages.add_warning(NO_STOPS, '')
 
     unused_areas = areas.copy()
 
     if stops_exists:
-        check_areas_of_file(stops_path, 'stop', areas, unused_areas, errors)
+        check_areas_of_file(stops_path, 'stop', areas, unused_areas, messages)
     if stop_times_exists:
-        check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, errors)
+        check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, messages)
     
     if len(unused_areas) > 0:
         warning_info = 'Unused areas: ' + str(unused_areas)
-        add_warning(UNUSED_AREAS_IN_STOPS, '', warnings, '', warning_info)
+        messages.add_warning(UNUSED_AREAS_IN_STOPS, '', '', warning_info)
 
-def service_ids(gtfs_root_dir, errors, warnings):
+def service_ids(gtfs_root_dir, messages):
     service_ids = []
     def for_each_calendar(line, line_num_error_msg):
         service_id = line.get('service_id')
 
         if not service_id:
-            add_error(EMPTY_SERVICE_ID_CALENDAR, line_num_error_msg, errors)
+            messages.add_error(EMPTY_SERVICE_ID_CALENDAR, line_num_error_msg)
             return
 
         if service_id in service_ids:
             error_info = 'service_id: ' + service_id
-            add_error(DUPLICATE_SERVICE_ID, line_num_error_msg, errors, '', error_info)
+            messages.add_error(DUPLICATE_SERVICE_ID, line_num_error_msg, '', error_info)
 
         service_ids.append(service_id)
     
@@ -73,10 +73,10 @@ def service_ids(gtfs_root_dir, errors, warnings):
         service_id = line.get('service_id')
 
         if service_id == '':
-            add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line_num_error_msg, errors)
+            messages.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line_num_error_msg)
             return
 
-        if not service_id in service_ids:
+        if service_id not in service_ids:
             service_ids.append(service_id)
 
     calendar_path = path.join(gtfs_root_dir, 'calendar.txt')
@@ -86,13 +86,13 @@ def service_ids(gtfs_root_dir, errors, warnings):
     calendar_dates_exists = path.isfile(calendar_dates_path)
 
     if not calendar_exists and not calendar_dates_exists:
-        add_warning(NO_SERVICE_IDS, '', warnings)
+        messages.add_warning(NO_SERVICE_IDS, '')
         return service_ids
 
     if calendar_exists:
-        read_csv_file(calendar_path, ['service_id'], [], errors, warnings, for_each_calendar)
+        read_csv_file(calendar_path, ['service_id'], [], messages, for_each_calendar)
 
     if calendar_dates_exists:
-        read_csv_file(calendar_dates_path, ['service_id'], [], errors, warnings, for_each_calendar_date)
+        read_csv_file(calendar_dates_path, ['service_id'], [], messages, for_each_calendar_date)
 
     return service_ids
