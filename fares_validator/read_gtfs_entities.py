@@ -12,7 +12,7 @@ def networks(gtfs_root_dir, messages):
 
     for line in utils.read_csv_file(gtfs_root_dir / 'routes.txt', [], [], messages, NO_ROUTES):
         if line.network_id:
-                networks.add(line.network_id)
+            networks.add(line.network_id)
 
     return networks
 

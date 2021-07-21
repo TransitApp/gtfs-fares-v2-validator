@@ -3,6 +3,9 @@ from pathlib import Path
 from . import read_gtfs_entities, read_fares_entities, diagnostics
 from . import warnings as warn
 
+class GTFS:
+    def __init__(self):
+        self.areas = {}
 
 def run_validator(gtfs_root_dir, should_read_stop_times):
     gtfs_root_dir = Path(gtfs_root_dir)

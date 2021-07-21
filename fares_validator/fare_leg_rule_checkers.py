@@ -1,5 +1,5 @@
-from .errors import *
 from . import utils
+from .errors import *
 
 
 def check_areas(line, areas, unused_areas):

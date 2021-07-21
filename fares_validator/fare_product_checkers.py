@@ -42,7 +42,7 @@ def check_durations_and_offsets(line):
         line.add_error(INVALID_DURATION_START)
 
     if line.duration_unit and line.duration_unit not in {'0', '1', '2', '3', '4', '5', '6'}:
-       line.add_error(INVALID_DURATION_UNIT)
+        line.add_error(INVALID_DURATION_UNIT)
 
     if line.duration_type and line.duration_type in {'1', '2'}:
         line.add_error(INVALID_DURATION_TYPE)

@@ -1,10 +1,10 @@
 import csv
 from pathlib import Path
 
+from . import diagnostics
 from .decimals_by_currency import decimals_by_currency
 from .errors import *
 from .warnings import *
-from . import diagnostics
 
 
 class Entity:
@@ -27,15 +27,16 @@ def read_csv_file(path, required_fields, defined_fields, messages, message_if_mi
     if not path.exists():
         if message_if_missing:
             messages.add_warning(diagnostics.format(message_if_missing))
-        return
+        return []
 
     with open(path, 'r', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile, skipinitialspace=True)
 
         for required_field in required_fields:
             if required_field not in reader.fieldnames:
-                messages.add_error(diagnostics.format(REQUIRED_FIELD_MISSING, '', path.name, f'field:  {required_field}'))
-                return False
+                messages.add_error(
+                    diagnostics.format(REQUIRED_FIELD_MISSING, '', path.name, f'field:  {required_field}'))
+                return []
 
         if defined_fields:
             unexpected_fields = []
