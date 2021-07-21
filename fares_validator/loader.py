@@ -5,15 +5,8 @@ from . import warnings as warn
 
 
 class Entities:
-    def __init__(self):
-        self.area_ids = set()
-        self.network_ids = set()
-        self.service_ids = set()
-        self.timeframe_ids = set()
-        self.rider_category_ids = set()
-        self.rider_catrgory_by_fare_container = {}
-        self.linked_entities_by_fare_product = {}
-        self.leg_group_ids = set()
+    # Can eventually list the known types here for a typechecker like mypy
+    pass
 
 
 def run_validator(gtfs_root_dir, should_read_stop_times):

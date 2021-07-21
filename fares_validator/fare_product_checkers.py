@@ -2,21 +2,22 @@ from .errors import *
 from .warnings import *
 
 
+class LinkedEntities:
+    def __init__(self):
+        self.rider_category_ids = set()
+        self.fare_container_ids = set()
+
+
 def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product):
-    linked_entities = linked_entities_by_fare_product.get(line.fare_product_id)
-    if not linked_entities:
-        linked_entities = {
-            'rider_category_ids': [],
-            'fare_container_ids': [],
-        }
+    linked_entities = linked_entities_by_fare_product.setdefault(line.fare_product_id, LinkedEntities())
 
     if line.rider_category_id:
-        linked_entities['rider_category_ids'].append(line.rider_category_id)
+        linked_entities.rider_category_ids.add(line.rider_category_id)
         if line.rider_category_id not in rider_categories:
             line.add_error(NONEXISTENT_RIDER_CATEGORY_ID)
 
     if line.fare_container_id:
-        linked_entities['fare_container_ids'].append(line.fare_container_id)
+        linked_entities.fare_container_ids.add(line.fare_container_id)
         if line.fare_container_id not in rider_category_by_fare_container:
             line.add_error(NONEXISTENT_FARE_CONTAINER_ID)
 
