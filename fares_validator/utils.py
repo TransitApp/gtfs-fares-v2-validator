@@ -122,4 +122,4 @@ def check_linked_flr_ftr_entities(path, line, line_num_error_msg, rider_categori
     if rider_category_id and fare_container_id:
         fc_rider_cat = rider_category_by_fare_container[fare_container_id]
         if fc_rider_cat and (fc_rider_cat != rider_category_id):
-            messages.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, line_num_error_msg, errors, filename)
+            messages.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, line_num_error_msg, filename)

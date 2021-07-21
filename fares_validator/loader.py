@@ -29,6 +29,6 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     if len(unused_timeframes):
         warning_info = 'Unused timeframes: ' + str(unused_timeframes)
-        results.add_warning(warn.UNUSED_TIMEFRAME_IDS, '', warnings, '', warning_info)
+        results.add_warning(warn.UNUSED_TIMEFRAME_IDS, '', '', warning_info)
 
     return results
