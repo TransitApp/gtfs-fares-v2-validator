@@ -29,16 +29,16 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
     gtfs.rider_category_ids = read_fares_entities.rider_categories(gtfs_root_dir, results)
 
     gtfs.rider_category_by_fare_container = read_fares_entities.fare_containers(gtfs_root_dir,
-                                                                                                 gtfs.rider_category_ids,
-                                                                                                 results)
+                                                                                gtfs.rider_category_ids,
+                                                                                results)
 
     gtfs.linked_entities_by_fare_product = read_fares_entities.fare_products(gtfs_root_dir,
-                                                                                              gtfs,
-                                                                                              unused_timeframes,
-                                                                                              results)
+                                                                             gtfs,
+                                                                             unused_timeframes,
+                                                                             results)
 
     gtfs.leg_group_ids = read_fares_entities.fare_leg_rules(gtfs_root_dir, gtfs,
-                                                                             unused_timeframes, results)
+                                                            unused_timeframes, results)
 
     read_fares_entities.fare_transfer_rules(gtfs_root_dir, gtfs, results)
 

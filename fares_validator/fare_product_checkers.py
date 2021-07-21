@@ -71,7 +71,7 @@ def check_durations_and_offsets(line):
             line.add_error(DURATION_UNIT_WITHOUT_AMOUNT)
 
     if line.offset_unit and line.offset_unit not in {'0', '1', '2', '3', '4', '5', '6'}:
-        line.add_error(INVALID_OFFSET_UNIT, line.line_num_error_msg)
+        line.add_error(INVALID_OFFSET_UNIT)
 
     if line.offset_amount:
         try:

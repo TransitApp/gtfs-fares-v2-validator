@@ -61,7 +61,7 @@ def timeframes(gtfs_root_dir, messages):
         endtimematch = re.search(r'^\d?\d:\d\d:\d\d$', line.end_time)
 
         if not starttimematch or not endtimematch:
-            messages.add_error(INVALID_TIME_FORMAT, line.line_num_error_msg)
+            line.add_error(INVALID_TIME_FORMAT)
             timeframes.add(line.timeframe_id)
             continue
 

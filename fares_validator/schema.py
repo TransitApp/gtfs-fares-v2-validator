@@ -1,18 +1,20 @@
-from .utils import Schema
 from . import warnings
+from .utils import Schema
 
 AREAS = Schema('areas.txt',
                required_fields={'area_id'},
                defined_fields={
-    'area_id',
-    'area_name',
-    'greater_area_id'
-}, message_if_missing=warnings.NO_AREAS)
+                   'area_id',
+                   'area_name',
+                   'greater_area_id'
+               }, message_if_missing=warnings.NO_AREAS)
 
 ROUTES = Schema('routes.txt', set(), {'network_id'},
                 message_if_missing=warnings.NO_ROUTES,
                 suppress_undefined_field_warning=True)
+
 CALENDAR = Schema('calendar.txt', {'service_id'}, set())
+
 CALENDAR_DATES = Schema('calendar_dates.txt', {'service_id'}, set())
 
 TIMEFRAMES = Schema('timeframes.txt', {'timeframe_id', 'start_time', 'end_time'}, {

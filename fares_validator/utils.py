@@ -36,7 +36,6 @@ class Entity:
         else:
             raise TypeError(f'Reference to undefined field {item} in code!')
 
-
     def add_error(self, code, extra_info=''):
         self._messages.add_error(diagnostics.format(code, self.line_num_error_msg, self._schema.basename, extra_info))
 
@@ -111,8 +110,8 @@ def check_amts(path, line, min_amt_exists, max_amt_exists, amt_exists):
 
 
 def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
-    with open(path, 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
+    with open(path, 'r', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile, skipinitialspace=True)
 
         # Avoid parsing huge file if areas are not in use
         if 'area_id' not in reader.fieldnames:
@@ -125,8 +124,8 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
                 continue
 
             if area_id not in areas:
-                line_num_error_msg = '\nLine: ' + str(reader.line_num)
-                messages.add_error(diagnostics.format(NONEXISTENT_AREA_ID, line_num_error_msg, stop_or_stop_time))
+                messages.add_error(
+                    diagnostics.format(NONEXISTENT_AREA_ID, f'\nLine: {reader.line_num}', stop_or_stop_time))
                 continue
 
             if area_id in unused_areas:
