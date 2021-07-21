@@ -29,7 +29,7 @@ class Diagnostics:
             output += 'ERRORS:\n'
 
             for error in self.errors:
-                output += '\n' + error + '\n'
+                output += f'\n{error}\n'
         else:
             output += 'No errors detected.\n'
 
@@ -37,7 +37,7 @@ class Diagnostics:
             output += '\n\nWARNINGS:\n'
 
             for warning in self.warnings:
-                output += '\n' + warning + '\n'
+                output += f'\n{warning}\n'
         else:
             output += '\n\nNo warnings to report.'
 
