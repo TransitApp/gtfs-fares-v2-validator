@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from . import read_gtfs_entities, read_fares_entities, messages
+from . import read_gtfs_entities, read_fares_entities, diagnostics
 from . import warnings as warn
 
 
 def run_validator(gtfs_root_dir, should_read_stop_times):
     gtfs_root_dir = Path(gtfs_root_dir)
-    results = messages.Messages()
+    results = diagnostics.Diagnostics()
 
     dependent_entities = {}
 
@@ -40,6 +40,6 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     if len(unused_timeframes):
         warning_info = 'Unused timeframes: ' + str(unused_timeframes)
-        results.add_warning(warn.UNUSED_TIMEFRAME_IDS, '', '', warning_info)
+        results.add_warning(diagnostics.format(warn.UNUSED_TIMEFRAME_IDS, '', '', warning_info))
 
     return results

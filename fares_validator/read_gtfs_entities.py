@@ -5,6 +5,7 @@ Reads files introduced as part of the original GTFS specification
 import csv
 from os import path
 
+from . import diagnostics
 from .errors import *
 from .utils import read_csv_file, check_areas_of_file
 from .warnings import *
@@ -14,7 +15,7 @@ def networks(gtfs_root_dir, messages):
     routes_path = path.join(gtfs_root_dir, 'routes.txt')
 
     if not path.isfile(routes_path):
-        messages.add_warning(NO_ROUTES, '')
+        messages.add_warning(diagnostics.format(NO_ROUTES, ''))
         return []
 
     networks = []
@@ -44,7 +45,7 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
         stop_times_exists = path.isfile(stop_times_path)
 
     if not stops_exists:
-        messages.add_warning(NO_STOPS, '')
+        messages.add_warning(diagnostics.format(NO_STOPS, ''))
 
     unused_areas = areas.copy()
 
@@ -54,8 +55,7 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
         check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, messages)
 
     if len(unused_areas) > 0:
-        warning_info = 'Unused areas: ' + str(unused_areas)
-        messages.add_warning(UNUSED_AREAS_IN_STOPS, '', '', warning_info)
+        messages.add_warning(diagnostics.format(UNUSED_AREAS_IN_STOPS, '', '', f'Unused areas: {unused_areas}'))
 
 
 def service_ids(gtfs_root_dir, messages):
@@ -64,23 +64,22 @@ def service_ids(gtfs_root_dir, messages):
 
     service_ids = []
     if not calendar_path.exists() and not calendar_dates_path.exists():
-        messages.add_warning(NO_SERVICE_IDS, '')
+        messages.add_warning(diagnostics.format(NO_SERVICE_IDS, ''))
         return service_ids
 
     for line in read_csv_file(calendar_path, ['service_id'], [], messages):
         if not line.service_id:
-            messages.add_error(EMPTY_SERVICE_ID_CALENDAR, line.line_num_error_msg)
+            line.add_error(EMPTY_SERVICE_ID_CALENDAR)
             continue
 
         if line.service_id in service_ids:
-            error_info = 'service_id: ' + line.service_id
-            messages.add_error(DUPLICATE_SERVICE_ID, line.line_num_error_msg, '', error_info)
+            line.add_error(DUPLICATE_SERVICE_ID, f'service_id: {line.service_id}')
 
         service_ids.append(line.service_id)
 
     for line in read_csv_file(calendar_dates_path, ['service_id'], [], messages):
         if not line.service_id:
-            messages.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line.line_num_error_msg)
+            line.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES)
             continue
 
         if line.service_id not in service_ids:
