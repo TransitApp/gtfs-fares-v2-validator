@@ -14,18 +14,15 @@ from .expected_fields import *
 def areas(gtfs_root_dir, messages):
     greater_area_id_by_area_id = {}
     def for_each_area(line, line_num_error_msg):
-        area_id = line.get('area_id')
-        greater_area_id = line.get('greater_area_id')
-
-        if area_id in greater_area_id_by_area_id:
+        if line.area_id in greater_area_id_by_area_id:
             messages.add_error(DUPLICATE_AREA_ID, line_num_error_msg)
             return
 
-        if not area_id:
+        if not line.area_id:
             messages.add_error(EMPTY_AREA_ID, line_num_error_msg)
             return
 
-        greater_area_id_by_area_id[area_id] = greater_area_id
+        greater_area_id_by_area_id[line.area_id] = line.greater_area_id
 
     areas_path = path.join(gtfs_root_dir, 'areas.txt')
 
@@ -56,30 +53,26 @@ def areas(gtfs_root_dir, messages):
 def timeframes(gtfs_root_dir, messages):
     timeframes = []
     def for_each_timeframe(line, line_num_error_msg):
-        timeframe_id = line.get('timeframe_id')
-        start_time = line.get('start_time')
-        end_time = line.get('end_time')
-
-        if not timeframe_id:
+        if not line.timeframe_id:
             messages.add_error(EMPTY_TIMEFRAME_ID, line_num_error_msg)
             return
-        if not start_time:
+        if not line.start_time:
             messages.add_error(EMPTY_START_TIME, line_num_error_msg)
             return
-        if not end_time:
+        if not line.end_time:
             messages.add_error(EMPTY_END_TIME, line_num_error_msg)
             return
 
-        starttimematch = re.search(r'^\d?\d:\d\d:\d\d$', start_time)
-        endtimematch = re.search(r'^\d?\d:\d\d:\d\d$', end_time)
+        starttimematch = re.search(r'^\d?\d:\d\d:\d\d$', line.start_time)
+        endtimematch = re.search(r'^\d?\d:\d\d:\d\d$', line.end_time)
 
         if not starttimematch or not endtimematch:
             messages.add_error(INVALID_TIME_FORMAT, line_num_error_msg)
-            timeframes.append(timeframe_id)
+            timeframes.append(line.timeframe_id)
             return
 
-        starttime_split = start_time.split(':')
-        endtime_split = end_time.split(':')
+        starttime_split = line.start_time.split(':')
+        endtime_split = line.end_time.split(':')
         
         if int(starttime_split[0]) > 23 or int(endtime_split[0]) > 23:
             messages.add_error(INVALID_TIME_FORMAT, line_num_error_msg)
@@ -90,8 +83,8 @@ def timeframes(gtfs_root_dir, messages):
         if int(starttime_split[2]) > 59 or int(endtime_split[2]) > 59:
             messages.add_error(INVALID_TIME_FORMAT, line_num_error_msg)
 
-        if timeframe_id not in timeframes:
-            timeframes.append(timeframe_id)
+        if line.timeframe_id not in timeframes:
+            timeframes.append(line.timeframe_id)
 
     timeframes_path = path.join(gtfs_root_dir, 'timeframes.txt')
 
@@ -106,30 +99,26 @@ def timeframes(gtfs_root_dir, messages):
 def rider_categories(gtfs_root_dir, messages):
     rider_categories = []
     def for_each_rider_category(line, line_num_error_msg):
-        rider_category = line.get('rider_category_id')
-        min_age = line.get('min_age')
         min_age_int = 0
-        max_age = line.get('max_age')
-
-        if not rider_category:
+        if not line.rider_category_id:
             messages.add_error(EMPTY_RIDER_CATEGORY_ID, line_num_error_msg)
             return
 
-        if rider_category not in rider_categories:
-            rider_categories.append(rider_category)
-        
-        if min_age:
+        if line.rider_category_id not in rider_categories:
+            rider_categories.append(line.rider_category_id)
+
+        if line.min_age:
             try:
-                min_age_int = int(min_age)
+                min_age_int = int(line.min_age)
                 if min_age_int < 0:
                     messages.add_error(NEGATIVE_MIN_AGE, line_num_error_msg)
                 if min_age_int > 100:
                     messages.add_warning(VERY_LARGE_MIN_AGE, line_num_error_msg)
             except ValueError:
                 messages.add_error(NON_INT_MIN_AGE, line_num_error_msg)
-        if max_age:
+        if line.max_age:
             try:
-                max_age_int = int(max_age)
+                max_age_int = int(line.max_age)
                 if max_age_int < 0:
                     messages.add_error(NEGATIVE_MAX_AGE, line_num_error_msg)
                 if max_age_int > 100:
@@ -154,32 +143,28 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
     fare_containers_path = path.join(gtfs_root_dir, 'fare_containers.txt')
 
     def for_each_fare_container(line, line_num_error_msg):
-        fare_container_id = line.get('fare_container_id')
-        fare_container_name = line.get('fare_container_name')
-        rider_category_id = line.get('rider_category_id')
-
-        if not fare_container_id:
+        if not line.fare_container_id:
             messages.add_error(EMPTY_FARE_CONTAINER_ID, line_num_error_msg)
             return
 
-        if not fare_container_name:
+        if not line.fare_container_name:
             messages.add_error(EMPTY_FARE_CONTAINER_NAME, line_num_error_msg)
             return
 
         amount_exists = check_fare_amount(fare_containers_path, line, line_num_error_msg, 'amount', 'currency', messages)
         min_purchase_exists = check_fare_amount(fare_containers_path, line, line_num_error_msg, 'minimum_initial_purchase', 'currency', messages)
-        if (not amount_exists and not min_purchase_exists) and line.get('currency'):
+        if (not amount_exists and not min_purchase_exists) and line.currency:
             messages.add_error(CURRENCY_WITHOUT_AMOUNT, line_num_error_msg, 'fare_containers.txt')
 
-        if fare_container_id in rider_category_by_fare_container:
+        if line.fare_container_id in rider_category_by_fare_container:
             messages.add_error(DUPLICATE_FARE_CONTAINER_ID, line_num_error_msg)
             return
 
-        if rider_category_id:
-            if rider_category_id not in rider_categories:
+        if line.rider_category_id:
+            if line.rider_category_id not in rider_categories:
                 messages.add_error(NONEXISTENT_RIDER_CATEGORY_ID, line_num_error_msg, 'fare_containers.txt')
 
-        rider_category_by_fare_container[fare_container_id] = rider_category_id
+        rider_category_by_fare_container[line.fare_container_id] = line.rider_category_id
     
     if not path.isfile(fare_containers_path):
         messages.add_warning(NO_FARE_CONTAINERS, '')
@@ -200,10 +185,10 @@ def fare_products(gtfs_root_dir, dependent_entities,  unused_timeframes, message
     fare_products_path = path.join(gtfs_root_dir, 'fare_products.txt')
 
     def for_each_fare_product(line, line_num_error_msg):
-        if not line.get('fare_product_id'):
+        if not line.fare_product_id:
             messages.add_error(EMPTY_FARE_PRODUCT_ID, line_num_error_msg)
             return
-        if not line.get('fare_product_name'):
+        if not line.fare_product_name:
             messages.add_error(EMPTY_FARE_PRODUCT_NAME, line_num_error_msg)
             return
         
@@ -212,22 +197,22 @@ def fare_products(gtfs_root_dir, dependent_entities,  unused_timeframes, message
         min_amt_exists = check_fare_amount(fare_products_path, line, line_num_error_msg, 'min_amount', 'currency', messages)
         max_amt_exists = check_fare_amount(fare_products_path, line, line_num_error_msg, 'max_amount', 'currency', messages)
         amt_exists = check_fare_amount(fare_products_path, line, line_num_error_msg, 'amount', 'currency', messages)
-        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.get('currency'):
+        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             messages.add_error(CURRENCY_WITHOUT_AMOUNT, line_num_error_msg, 'fare_products.txt')
         
         check_amts(fare_products_path, line_num_error_msg, min_amt_exists, max_amt_exists, amt_exists, messages)
 
         check_bundle(line, line_num_error_msg, messages)
-        check_linked_id(path, line, 'service_id', service_ids, line_num_error_msg, messages)
-        timeframe_exists = check_linked_id(path, line, 'timeframe_id', timeframe_ids, line_num_error_msg, messages)
+        check_linked_id(fare_products_path, line, 'service_id', service_ids, line_num_error_msg, messages)
+        timeframe_exists = check_linked_id(fare_products_path, line, 'timeframe_id', timeframe_ids, line_num_error_msg, messages)
 
-        if line.get('timeframe_id') in unused_timeframes:
-            unused_timeframes.remove(line.get('timeframe_id'))
+        if line.timeframe_id in unused_timeframes:
+            unused_timeframes.remove(line.timeframe_id)
         if timeframe_exists:
-            if line.get('timeframe_type') not in {'0', '1'}:
+            if line.timeframe_type not in {'0', '1'}:
                 messages.add_error(INVALID_TIMEFRAME_TYPE, line_num_error_msg)
         else:
-            if line.get('timeframe_type'):
+            if line.timeframe_type:
                 messages.add_error(TIMEFRAME_TYPE_WITHOUT_TIMEFRAME, line_num_error_msg)
         
         check_durations_and_offsets(line, line_num_error_msg, messages)
@@ -256,21 +241,21 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
     fare_leg_rules_path = path.join(gtfs_root_dir, 'fare_leg_rules.txt')
 
     def for_each_fare_leg_rule(line, line_num_error_msg):
-        if line.get('leg_group_id') and line.get('leg_group_id') not in leg_group_ids:
-            leg_group_ids.append(line.get('leg_group_id'))
+        if line.leg_group_id and line.leg_group_id not in leg_group_ids:
+            leg_group_ids.append(line.leg_group_id)
 
         check_areas(fare_leg_rules_path, line, line_num_error_msg, areas, unused_areas, messages)
 
         check_linked_id(fare_leg_rules_path, line, 'network_id', networks, line_num_error_msg, messages)
-        if line.get('network_id') in unused_networks:
-            unused_networks.remove(line.get('network_id'))
+        if line.network_id in unused_networks:
+            unused_networks.remove(line.network_id)
 
         check_linked_id(fare_leg_rules_path, line, 'from_timeframe_id', timeframe_ids, line_num_error_msg, messages)
-        if line.get('from_timeframe_id') in unused_timeframes:
-            unused_timeframes.remove(line.get('from_timeframe_id'))
+        if line.from_timeframe_id in unused_timeframes:
+            unused_timeframes.remove(line.from_timeframe_id)
         check_linked_id(fare_leg_rules_path, line, 'to_timeframe_id', timeframe_ids, line_num_error_msg, messages)
-        if line.get('to_timeframe_id') in unused_timeframes:
-            unused_timeframes.remove(line.get('to_timeframe_id'))
+        if line.to_timeframe_id in unused_timeframes:
+            unused_timeframes.remove(line.to_timeframe_id)
 
         check_linked_id(fare_leg_rules_path, line, 'service_id', service_ids, line_num_error_msg, messages)
 
@@ -279,13 +264,13 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
         min_amt_exists = check_fare_amount(fare_leg_rules_path, line, line_num_error_msg, 'min_amount', 'currency', messages)
         max_amt_exists = check_fare_amount(fare_leg_rules_path, line, line_num_error_msg, 'max_amount', 'currency', messages)
         amt_exists = check_fare_amount(fare_leg_rules_path, line, line_num_error_msg, 'amount', 'currency', messages)
-        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.get('currency'):
+        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             messages.add_error(CURRENCY_WITHOUT_AMOUNT, line_num_error_msg, 'fare_leg_rules.txt')
         check_amts(fare_leg_rules_path, line_num_error_msg, min_amt_exists, max_amt_exists, amt_exists, messages)
-        if (min_amt_exists or max_amt_exists or amt_exists) and line.get('fare_product_id'):
+        if (min_amt_exists or max_amt_exists or amt_exists) and line.fare_product_id:
             messages.add_error(AMOUNT_WITH_FARE_PRODUCT, line_num_error_msg)
         
-        if line.get('fare_leg_name') and line.get('fare_product_id'):
+        if line.fare_leg_name and line.fare_product_id:
             messages.add_error(FARE_LEG_NAME_WITH_FARE_PRODUCT, line_num_error_msg)
         
         check_linked_flr_ftr_entities(fare_leg_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, messages)
@@ -321,16 +306,16 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
         min_amt_exists = check_fare_amount(fare_transfer_rules_path, line, line_num_error_msg, 'min_amount', 'currency', messages)
         max_amt_exists = check_fare_amount(fare_transfer_rules_path, line, line_num_error_msg, 'max_amount', 'currency', messages)
         amt_exists = check_fare_amount(fare_transfer_rules_path, line, line_num_error_msg, 'amount', 'currency',  messages)
-        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.get('currency'):
+        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             messages.add_error(CURRENCY_WITHOUT_AMOUNT, line_num_error_msg, 'fare_transfer_rules.txt')
 
         check_amts(fare_transfer_rules_path, line_num_error_msg, min_amt_exists, max_amt_exists, amt_exists, messages)
 
-        if (min_amt_exists or max_amt_exists or amt_exists) and not line.get('fare_transfer_type'):
+        if (min_amt_exists or max_amt_exists or amt_exists) and not line.fare_transfer_type:
             messages.add_error(AMOUNT_WITHOUT_FARE_TRANSFER_TYPE, line_num_error_msg)
-        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.get('fare_transfer_type'):
+        if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.fare_transfer_type:
             messages.add_error(FARE_TRANSFER_TYPE_WITHOUT_AMOUNT, line_num_error_msg)
-        if line.get('fare_transfer_type') and (line.get('fare_transfer_type') not in {'0', '1', '2', '3'}):
+        if line.fare_transfer_type and (line.fare_transfer_type not in {'0', '1', '2', '3'}):
             messages.add_error(INVALID_FARE_TRANSFER_TYPE, line_num_error_msg)
         
         check_linked_flr_ftr_entities(fare_transfer_rules_path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, messages)

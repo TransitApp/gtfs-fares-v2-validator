@@ -57,27 +57,23 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
 def service_ids(gtfs_root_dir, messages):
     service_ids = []
     def for_each_calendar(line, line_num_error_msg):
-        service_id = line.get('service_id')
-
-        if not service_id:
+        if not line.service_id:
             messages.add_error(EMPTY_SERVICE_ID_CALENDAR, line_num_error_msg)
             return
 
-        if service_id in service_ids:
-            error_info = 'service_id: ' + service_id
+        if line.service_id in service_ids:
+            error_info = 'service_id: ' + line.service_id
             messages.add_error(DUPLICATE_SERVICE_ID, line_num_error_msg, '', error_info)
 
-        service_ids.append(service_id)
+        service_ids.append(line.service_id)
     
     def for_each_calendar_date(line, line_num_error_msg):
-        service_id = line.get('service_id')
-
-        if service_id == '':
+        if not line.service_id:
             messages.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line_num_error_msg)
             return
 
-        if service_id not in service_ids:
-            service_ids.append(service_id)
+        if line.service_id not in service_ids:
+            service_ids.append(line.service_id)
 
     calendar_path = path.join(gtfs_root_dir, 'calendar.txt')
     calendar_dates_path = path.join(gtfs_root_dir, 'calendar_dates.txt')

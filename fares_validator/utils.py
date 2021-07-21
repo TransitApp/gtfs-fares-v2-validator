@@ -2,14 +2,19 @@ import csv
 from .decimals_by_currency import decimals_by_currency
 from .errors import *
 from .warnings import *
+from pathlib import Path
 
-def get_filename_of_path(path):
-    path_split = path.split('/')
-    file = path_split[len(path_split) - 1]
-    return file
+
+class Entity:
+    def __init__(self, original_dict):
+        self.data = original_dict
+
+    def __getattr__(self, item):
+        return self.data.get(item)
+
 
 def read_csv_file(path, required_fields, expected_fields, messages, func):
-    filename = get_filename_of_path(path)
+    filename = Path(path).name
     with open(path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
@@ -29,15 +34,14 @@ def read_csv_file(path, required_fields, expected_fields, messages, func):
                 messages.add_warning(UNEXPECTED_FIELDS, '', filename, extra_info)
 
         for line in reader:
+            entity = Entity(line)
             line_num_error_msg = '\nLine: ' + str(reader.line_num)
-            func(line, line_num_error_msg)
+            func(entity, line_num_error_msg)
 
 def check_fare_amount(path, line, line_num_error_msg, fare_field, currency_field, messages):
-    filename = get_filename_of_path(path)
-    fare, currency = '', ''
-
-    fare = line.get(fare_field)
-    currency = line.get(currency_field)
+    filename = Path(path).name
+    fare = getattr(line, fare_field)
+    currency = getattr(line, currency_field)
 
     if fare:
         if not currency:
@@ -59,7 +63,7 @@ def check_fare_amount(path, line, line_num_error_msg, fare_field, currency_field
         return False
 
 def check_amts(path, line_num_error_msg, min_amt_exists, max_amt_exists, amt_exists, messages):
-    filename = get_filename_of_path(path)
+    filename = Path(path).name
     if (min_amt_exists or max_amt_exists) and amt_exists:
         messages.add_error(AMOUNT_WITH_MIN_OR_MAX_AMOUNT, line_num_error_msg, filename)
     if (min_amt_exists and not max_amt_exists) or (max_amt_exists and not min_amt_exists):
@@ -87,39 +91,36 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
                     unused_areas.remove(area_id)
 
 def check_linked_id(path, line, fieldname, defined_ids, line_num_error_msg, messages):
-    filename = get_filename_of_path(path)
-    if not line.get(fieldname):
+    filename = Path(path).name
+    if not getattr(line, fieldname):
         return False
     
-    if line.get(fieldname) not in defined_ids:
-        error_info = fieldname + ': ' + line.get(fieldname)
+    if getattr(line, fieldname) not in defined_ids:
+        error_info = fieldname + ': ' + getattr(line, fieldname)
         messages.add_error(FOREIGN_ID_INVALID, line_num_error_msg, filename, error_info)
 
     return True
 
 def check_linked_flr_ftr_entities(path, line, line_num_error_msg, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product, messages):
-    filename = get_filename_of_path(path)
-    fare_product_id = line.get('fare_product_id')
-    rider_category_id = line.get('rider_category_id')
-    fare_container_id = line.get('fare_container_id')
+    filename = Path(path).name
 
-    if fare_product_id and fare_product_id not in linked_entities_by_fare_product:
+    if line.fare_product_id and line.fare_product_id not in linked_entities_by_fare_product:
         messages.add_error(NONEXISTENT_FARE_PRODUCT_ID, line_num_error_msg, filename)
-    if rider_category_id and rider_category_id not in rider_categories:
+    if line.rider_category_id and line.rider_category_id not in rider_categories:
         messages.add_error(NONEXISTENT_RIDER_CATEGORY_ID, line_num_error_msg, filename)
-    if fare_container_id and fare_container_id not in rider_category_by_fare_container:
+    if line.fare_container_id and line.fare_container_id not in rider_category_by_fare_container:
         messages.add_error(NONEXISTENT_FARE_CONTAINER_ID, line_num_error_msg, filename)
     
-    if fare_product_id:
-        if rider_category_id:
-            fp_rider_cats = linked_entities_by_fare_product[fare_product_id].get('rider_category_ids')
-            if len(fp_rider_cats) and (rider_category_id not in fp_rider_cats):
+    if line.fare_product_id:
+        if line.rider_category_id:
+            fp_rider_cats = linked_entities_by_fare_product[line.fare_product_id].get('rider_category_ids')
+            if len(fp_rider_cats) and (line.rider_category_id not in fp_rider_cats):
                 messages.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT, line_num_error_msg, filename)
-        if fare_container_id:
-            fp_fare_containers = linked_entities_by_fare_product[fare_product_id].get('fare_container_ids')
-            if len(fp_fare_containers) and (fare_container_id not in fp_fare_containers):
+        if line.fare_container_id:
+            fp_fare_containers = linked_entities_by_fare_product[line.fare_product_id].get('fare_container_ids')
+            if len(fp_fare_containers) and (line.fare_container_id not in fp_fare_containers):
                 messages.add_error(CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT, line_num_error_msg, filename)
-    if rider_category_id and fare_container_id:
-        fc_rider_cat = rider_category_by_fare_container[fare_container_id]
-        if fc_rider_cat and (fc_rider_cat != rider_category_id):
+    if line.rider_category_id and line.fare_container_id:
+        fc_rider_cat = rider_category_by_fare_container[line.fare_container_id]
+        if fc_rider_cat and (fc_rider_cat != line.rider_category_id):
             messages.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, line_num_error_msg, filename)
