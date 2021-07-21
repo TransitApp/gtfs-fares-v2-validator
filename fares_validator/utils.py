@@ -13,15 +13,18 @@ class Entity:
         return self.data.get(item)
 
 
-def read_csv_file(path, required_fields, expected_fields, messages, func):
-    filename = Path(path).name
+def read_csv_file(path, required_fields, expected_fields, messages):
+    path = Path(path)
+    if not path.exists():
+        return
+
     with open(path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
         for required_field in required_fields:
             if required_field not in reader.fieldnames:
                 extra_info = 'field: ' + required_field
-                messages.add_error(REQUIRED_FIELD_MISSING, '', filename, extra_info)
+                messages.add_error(REQUIRED_FIELD_MISSING, '', path.name, extra_info)
                 return False
 
         if len(expected_fields):
@@ -31,12 +34,13 @@ def read_csv_file(path, required_fields, expected_fields, messages, func):
                     unexpected_fields.append(field)
             if len(unexpected_fields):
                 extra_info = '\nColumn(s): ' + str(unexpected_fields)
-                messages.add_warning(UNEXPECTED_FIELDS, '', filename, extra_info)
+                messages.add_warning(UNEXPECTED_FIELDS, '', path.name, extra_info)
 
         for line in reader:
             line['line_num_error_msg'] = '\nLine: ' + str(reader.line_num)
             entity = Entity(line)
-            func(entity)
+            yield entity
+
 
 def check_fare_amount(path, line, fare_field, currency_field, messages):
     filename = Path(path).name

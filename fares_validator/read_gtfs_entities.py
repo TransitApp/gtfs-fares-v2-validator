@@ -55,40 +55,31 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
         messages.add_warning(UNUSED_AREAS_IN_STOPS, '', '', warning_info)
 
 def service_ids(gtfs_root_dir, messages):
+    calendar_path = gtfs_root_dir / 'calendar.txt'
+    calendar_dates_path = gtfs_root_dir / 'calendar_dates.txt'
+
     service_ids = []
-    def for_each_calendar(line):
+    if not calendar_path.exists() and not calendar_dates_path.exists():
+        messages.add_warning(NO_SERVICE_IDS, '')
+        return service_ids
+
+    for line in read_csv_file(calendar_path, ['service_id'], [], messages):
         if not line.service_id:
             messages.add_error(EMPTY_SERVICE_ID_CALENDAR, line.line_num_error_msg)
-            return
+            continue
 
         if line.service_id in service_ids:
             error_info = 'service_id: ' + line.service_id
             messages.add_error(DUPLICATE_SERVICE_ID, line.line_num_error_msg, '', error_info)
 
         service_ids.append(line.service_id)
-    
-    def for_each_calendar_date(line):
+
+    for line in read_csv_file(calendar_dates_path, ['service_id'], [], messages):
         if not line.service_id:
             messages.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES, line.line_num_error_msg)
-            return
+            continue
 
         if line.service_id not in service_ids:
             service_ids.append(line.service_id)
-
-    calendar_path = path.join(gtfs_root_dir, 'calendar.txt')
-    calendar_dates_path = path.join(gtfs_root_dir, 'calendar_dates.txt')
-    
-    calendar_exists = path.isfile(calendar_path)
-    calendar_dates_exists = path.isfile(calendar_dates_path)
-
-    if not calendar_exists and not calendar_dates_exists:
-        messages.add_warning(NO_SERVICE_IDS, '')
-        return service_ids
-
-    if calendar_exists:
-        read_csv_file(calendar_path, ['service_id'], [], messages, for_each_calendar)
-
-    if calendar_dates_exists:
-        read_csv_file(calendar_dates_path, ['service_id'], [], messages, for_each_calendar_date)
 
     return service_ids

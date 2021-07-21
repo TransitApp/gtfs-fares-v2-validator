@@ -1,7 +1,10 @@
 from . import read_gtfs_entities, read_fares_entities, messages
 from . import warnings as warn
+from pathlib import Path
+
 
 def run_validator(gtfs_root_dir, should_read_stop_times):
+    gtfs_root_dir = Path(gtfs_root_dir)
     results = messages.Messages()
 
     dependent_entities = {}
