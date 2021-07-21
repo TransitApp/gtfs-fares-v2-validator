@@ -149,13 +149,8 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
     return rider_category_by_fare_container
 
 
-def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages):
+def fare_products(gtfs_root_dir, gtfs, unused_timeframes, messages):
     linked_entities_by_fare_product = {}
-
-    service_ids = dependent_entities['service_ids']
-    timeframe_ids = dependent_entities['timeframe_ids']
-    rider_categories = dependent_entities['rider_category_ids']
-    rider_category_by_fare_container = dependent_entities['rider_category_by_fare_container']
 
     fare_products_path = gtfs_root_dir / 'fare_products.txt'
 
@@ -167,7 +162,7 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
             line.add_error(EMPTY_FARE_PRODUCT_NAME)
             continue
 
-        check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container,
+        check_linked_fp_entities(line, gtfs.rider_category_ids, gtfs.rider_category_by_fare_container,
                                  linked_entities_by_fare_product)
 
         min_amt_exists = check_fare_amount(line, 'min_amount', 'currency')
@@ -179,8 +174,8 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
         check_amts(fare_products_path, line, min_amt_exists, max_amt_exists, amt_exists)
 
         check_bundle(line)
-        check_linked_id(line, 'service_id', service_ids)
-        timeframe_exists = check_linked_id(line, 'timeframe_id', timeframe_ids)
+        check_linked_id(line, 'service_id', gtfs.service_ids)
+        timeframe_exists = check_linked_id(line, 'timeframe_id', gtfs.timeframe_ids)
 
         if line.timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.timeframe_id)
@@ -196,19 +191,11 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
     return linked_entities_by_fare_product
 
 
-def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, messages):
+def fare_leg_rules(gtfs_root_dir, gtfs, unused_timeframes, messages):
     leg_group_ids = set()
 
-    areas = dependent_entities['areas']
-    unused_areas = areas.copy()
-    networks = dependent_entities['networks']
-    unused_networks = networks.copy()
-    service_ids = dependent_entities['service_ids']
-    timeframe_ids = dependent_entities['timeframe_ids']
-    rider_categories = dependent_entities['rider_category_ids']
-    rider_category_by_fare_container = dependent_entities['rider_category_by_fare_container']
-    linked_entities_by_fare_product = dependent_entities['linked_entities_by_fare_product']
-
+    unused_areas = gtfs.areas.copy()
+    unused_networks = gtfs.networks.copy()
     fare_leg_rules_path = gtfs_root_dir / 'fare_leg_rules.txt'
 
     if not fare_leg_rules_path.exists():
@@ -218,20 +205,20 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
         if line.leg_group_id:
             leg_group_ids.add(line.leg_group_id)
 
-        check_areas(line, areas, unused_areas)
+        check_areas(line, gtfs.areas, unused_areas)
 
-        check_linked_id(line, 'network_id', networks)
+        check_linked_id(line, 'network_id', gtfs.networks)
         if line.network_id in unused_networks:
             unused_networks.remove(line.network_id)
 
-        check_linked_id(line, 'from_timeframe_id', timeframe_ids)
+        check_linked_id(line, 'from_timeframe_id', gtfs.timeframe_ids)
         if line.from_timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.from_timeframe_id)
-        check_linked_id(line, 'to_timeframe_id', timeframe_ids)
+        check_linked_id(line, 'to_timeframe_id', gtfs.timeframe_ids)
         if line.to_timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.to_timeframe_id)
 
-        check_linked_id(line, 'service_id', service_ids)
+        check_linked_id(line, 'service_id', gtfs.service_ids)
 
         check_distances(line)
 
@@ -247,8 +234,8 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
         if line.fare_leg_name and line.fare_product_id:
             line.add_error(FARE_LEG_NAME_WITH_FARE_PRODUCT)
 
-        check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare_container,
-                                      linked_entities_by_fare_product)
+        check_linked_flr_ftr_entities(line, gtfs.rider_category_ids, gtfs.rider_category_by_fare_container,
+                                      gtfs.linked_entities_by_fare_product)
 
     if len(unused_areas):
         messages.add_warning(diagnostics.format(UNUSED_AREA_IDS, '', '', f'Unused areas: {unused_areas}'))
@@ -259,20 +246,15 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
     return leg_group_ids
 
 
-def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
-    leg_group_ids = dependent_entities['leg_group_ids']
-    unused_leg_groups = leg_group_ids.copy()
-    rider_categories = dependent_entities['rider_category_ids']
-    rider_category_by_fare_container = dependent_entities['rider_category_by_fare_container']
-    linked_entities_by_fare_product = dependent_entities['linked_entities_by_fare_product']
-
+def fare_transfer_rules(gtfs_root_dir, gtfs, messages):
+    unused_leg_groups = gtfs.leg_group_ids.copy()
     fare_transfer_rules_path = gtfs_root_dir / 'fare_transfer_rules.txt'
 
     if not fare_transfer_rules_path.exists():
         messages.add_warning(diagnostics.format(NO_FARE_TRANSFER_RULES, ''))
 
     for line in read_csv_file(gtfs_root_dir, schema.FARE_TRANSFER_RULES, messages):
-        check_leg_groups(line, leg_group_ids, unused_leg_groups)
+        check_leg_groups(line, gtfs.leg_group_ids, unused_leg_groups)
         check_spans_and_transfer_ids(line)
         check_durations(line)
 
@@ -291,8 +273,8 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
         if line.fare_transfer_type and (line.fare_transfer_type not in {'0', '1', '2', '3'}):
             line.add_error(INVALID_FARE_TRANSFER_TYPE)
 
-        check_linked_flr_ftr_entities(line, rider_categories,
-                                      rider_category_by_fare_container, linked_entities_by_fare_product)
+        check_linked_flr_ftr_entities(line, gtfs.rider_category_ids,
+                                      gtfs.rider_category_by_fare_container, gtfs.linked_entities_by_fare_product)
 
     if len(unused_leg_groups):
         messages.add_warning(diagnostics.format(UNUSED_LEG_GROUPS, '', '',
