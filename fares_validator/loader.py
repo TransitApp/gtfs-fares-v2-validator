@@ -1,6 +1,7 @@
+from pathlib import Path
+
 from . import read_gtfs_entities, read_fares_entities, messages
 from . import warnings as warn
-from pathlib import Path
 
 
 def run_validator(gtfs_root_dir, should_read_stop_times):
@@ -22,11 +23,18 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     dependent_entities['rider_category_ids'] = read_fares_entities.rider_categories(gtfs_root_dir, results)
 
-    dependent_entities['rider_category_by_fare_container'] = read_fares_entities.fare_containers(gtfs_root_dir, dependent_entities['rider_category_ids'], results)
+    dependent_entities['rider_category_by_fare_container'] = read_fares_entities.fare_containers(gtfs_root_dir,
+                                                                                                 dependent_entities[
+                                                                                                     'rider_category_ids'],
+                                                                                                 results)
 
-    dependent_entities['linked_entities_by_fare_product'] = read_fares_entities.fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, results)
+    dependent_entities['linked_entities_by_fare_product'] = read_fares_entities.fare_products(gtfs_root_dir,
+                                                                                              dependent_entities,
+                                                                                              unused_timeframes,
+                                                                                              results)
 
-    dependent_entities['leg_group_ids'] = read_fares_entities.fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, results)
+    dependent_entities['leg_group_ids'] = read_fares_entities.fare_leg_rules(gtfs_root_dir, dependent_entities,
+                                                                             unused_timeframes, results)
 
     read_fares_entities.fare_transfer_rules(gtfs_root_dir, dependent_entities, results)
 

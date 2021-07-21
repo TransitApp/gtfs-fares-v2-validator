@@ -1,6 +1,7 @@
 import argparse
-from .loader import run_validator
 from os import path
+
+from .loader import run_validator
 
 
 def main():
@@ -27,9 +28,6 @@ def main():
             raise Exception('Writing to output file failed. Please ensure the output file path is valid.')
     else:
         print(output)
-
-
-
 
 
 if __name__ == '__main__':

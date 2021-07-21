@@ -4,9 +4,11 @@ Reads files introduced as part of the original GTFS specification
 
 import csv
 from os import path
-from .utils import read_csv_file, check_areas_of_file
+
 from .errors import *
+from .utils import read_csv_file, check_areas_of_file
 from .warnings import *
+
 
 def networks(gtfs_root_dir, messages):
     routes_path = path.join(gtfs_root_dir, 'routes.txt')
@@ -25,11 +27,12 @@ def networks(gtfs_root_dir, messages):
 
         for line in reader:
             network_id = line.get('network_id')
-            
+
             if network_id and network_id not in networks:
                 networks.append(network_id)
 
     return networks
+
 
 def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
     stops_path = path.join(gtfs_root_dir, 'stops.txt')
@@ -49,10 +52,11 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
         check_areas_of_file(stops_path, 'stop', areas, unused_areas, messages)
     if stop_times_exists:
         check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, messages)
-    
+
     if len(unused_areas) > 0:
         warning_info = 'Unused areas: ' + str(unused_areas)
         messages.add_warning(UNUSED_AREAS_IN_STOPS, '', '', warning_info)
+
 
 def service_ids(gtfs_root_dir, messages):
     calendar_path = gtfs_root_dir / 'calendar.txt'

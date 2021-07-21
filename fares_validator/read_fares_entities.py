@@ -3,13 +3,14 @@
 import re
 from os import path
 
-from .utils import check_fare_amount, read_csv_file, check_linked_id, check_amts, check_linked_flr_ftr_entities
-from .fare_product_checkers import check_linked_fp_entities, check_bundle, check_durations_and_offsets
-from .fare_leg_rule_checkers import check_areas, check_distances
-from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
+from . import defined_fields
 from .errors import *
+from .fare_leg_rule_checkers import check_areas, check_distances
+from .fare_product_checkers import check_linked_fp_entities, check_bundle, check_durations_and_offsets
+from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
+from .utils import check_fare_amount, read_csv_file, check_linked_id, check_amts, check_linked_flr_ftr_entities
 from .warnings import *
-from .expected_fields import *
+
 
 def areas(gtfs_root_dir, messages):
     greater_area_id_by_area_id = {}
@@ -19,7 +20,7 @@ def areas(gtfs_root_dir, messages):
         messages.add_warning(NO_AREAS, '')
         return []
 
-    for line in read_csv_file(areas_path, ['area_id'], EXPECTED_AREAS_FIELDS, messages):
+    for line in read_csv_file(areas_path, ['area_id'], defined_fields.AREAS, messages):
         if line.area_id in greater_area_id_by_area_id:
             messages.add_error(DUPLICATE_AREA_ID, line.line_num_error_msg)
             continue
@@ -48,6 +49,7 @@ def areas(gtfs_root_dir, messages):
 
     return list(greater_area_id_by_area_id.keys())
 
+
 def timeframes(gtfs_root_dir, messages):
     timeframes = []
     timeframes_path = gtfs_root_dir / 'timeframes.txt'
@@ -56,7 +58,8 @@ def timeframes(gtfs_root_dir, messages):
         messages.add_warning(NO_TIMEFRAMES, '')
         return timeframes
 
-    for line in read_csv_file(timeframes_path, ['timeframe_id', 'start_time', 'end_time'], EXPECTED_TIMEFRAMES_FIELDS, messages):
+    for line in read_csv_file(timeframes_path, ['timeframe_id', 'start_time', 'end_time'], defined_fields.TIMEFRAMES,
+                              messages):
         if not line.timeframe_id:
             messages.add_error(EMPTY_TIMEFRAME_ID, line.line_num_error_msg)
             continue
@@ -92,6 +95,7 @@ def timeframes(gtfs_root_dir, messages):
 
     return timeframes
 
+
 def rider_categories(gtfs_root_dir, messages):
     rider_categories = []
     rider_categories_path = gtfs_root_dir / 'rider_categories.txt'
@@ -100,7 +104,7 @@ def rider_categories(gtfs_root_dir, messages):
         messages.add_warning(NO_RIDER_CATEGORIES, '')
         return rider_categories
 
-    for line in read_csv_file(rider_categories_path, ['rider_category_id'], EXPECTED_RIDER_CATEGORIES_FIELDS, messages):
+    for line in read_csv_file(rider_categories_path, ['rider_category_id'], defined_fields.RIDER_CATEGORIES, messages):
         min_age_int = 0
         if not line.rider_category_id:
             messages.add_error(EMPTY_RIDER_CATEGORY_ID, line.line_num_error_msg)
@@ -141,7 +145,8 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
         messages.add_warning(NO_FARE_CONTAINERS, '')
         return rider_category_by_fare_container
 
-    for line in read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'], EXPECTED_FARE_CONTAINERS_FIELDS, messages):
+    for line in read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'],
+                              defined_fields.FARE_CONTAINERS, messages):
         if not line.fare_container_id:
             messages.add_error(EMPTY_FARE_CONTAINER_ID, line.line_num_error_msg)
             continue
@@ -151,7 +156,8 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
             continue
 
         amount_exists = check_fare_amount(fare_containers_path, line, 'amount', 'currency', messages)
-        min_purchase_exists = check_fare_amount(fare_containers_path, line, 'minimum_initial_purchase', 'currency', messages)
+        min_purchase_exists = check_fare_amount(fare_containers_path, line, 'minimum_initial_purchase', 'currency',
+                                                messages)
         if (not amount_exists and not min_purchase_exists) and line.currency:
             messages.add_error(CURRENCY_WITHOUT_AMOUNT, line.line_num_error_msg, 'fare_containers.txt')
 
@@ -167,9 +173,10 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
 
     return rider_category_by_fare_container
 
-def fare_products(gtfs_root_dir, dependent_entities,  unused_timeframes, messages):
+
+def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages):
     linked_entities_by_fare_product = {}
-    
+
     service_ids = dependent_entities['service_ids']
     timeframe_ids = dependent_entities['timeframe_ids']
     rider_categories = dependent_entities['rider_category_ids']
@@ -180,8 +187,9 @@ def fare_products(gtfs_root_dir, dependent_entities,  unused_timeframes, message
     if not path.isfile(fare_products_path):
         messages.add_warning(NO_FARE_PRODUCTS, '')
         return linked_entities_by_fare_product
-    
-    for line in read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'], EXPECTED_FARE_PRODUCTS_FIELDS, messages):
+
+    for line in read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'],
+                              defined_fields.FARE_PRODUCTS, messages):
         if not line.fare_product_id:
             messages.add_error(EMPTY_FARE_PRODUCT_ID, line.line_num_error_msg)
             continue
@@ -217,12 +225,13 @@ def fare_products(gtfs_root_dir, dependent_entities,  unused_timeframes, message
 
     return linked_entities_by_fare_product
 
+
 def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, messages):
     leg_group_ids = []
 
-    areas =  dependent_entities['areas']
+    areas = dependent_entities['areas']
     unused_areas = areas.copy()
-    networks =  dependent_entities['networks']
+    networks = dependent_entities['networks']
     unused_networks = networks.copy()
     service_ids = dependent_entities['service_ids']
     timeframe_ids = dependent_entities['timeframe_ids']
@@ -235,7 +244,7 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
     if not fare_leg_rules_path.exists():
         messages.add_warning(NO_FARE_LEG_RULES, '')
 
-    for line in read_csv_file(fare_leg_rules_path, [], EXPECTED_FARE_LEG_RULES_FIELDS, messages):
+    for line in read_csv_file(fare_leg_rules_path, [], defined_fields.FARE_LEG_RULES, messages):
         if line.leg_group_id and line.leg_group_id not in leg_group_ids:
             leg_group_ids.append(line.leg_group_id)
 
@@ -281,6 +290,7 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
 
     return leg_group_ids
 
+
 def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
     leg_group_ids = dependent_entities['leg_group_ids']
     unused_leg_groups = leg_group_ids.copy()
@@ -293,7 +303,7 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
     if not fare_transfer_rules_path.exists():
         messages.add_warning(NO_FARE_TRANSFER_RULES, '')
 
-    for line in read_csv_file(fare_transfer_rules_path, [], EXPECTED_FARE_TRANSFER_RULES_FIELDS, messages):
+    for line in read_csv_file(fare_transfer_rules_path, [], defined_fields.FARE_TRANSFER_RULES, messages):
         check_leg_groups(line, leg_group_ids, unused_leg_groups, messages)
         check_spans_and_transfer_ids(line, messages)
         check_durations(line, messages)

@@ -1,33 +1,33 @@
-EXPECTED_AREAS_FIELDS = [
+AREAS = {
     'area_id',
     'area_name',
     'greater_area_id'
-]
+}
 
-EXPECTED_TIMEFRAMES_FIELDS = [
+TIMEFRAMES = {
     'timeframe_id',
     'start_time',
     'end_time'
-]
+}
 
-EXPECTED_RIDER_CATEGORIES_FIELDS = [
+RIDER_CATEGORIES = {
     'rider_category_id',
     'min_age',
     'max_age',
     'rider_category_name',
     'eligibility_url'
-]
+}
 
-EXPECTED_FARE_CONTAINERS_FIELDS = [
+FARE_CONTAINERS = {
     'fare_container_id',
     'fare_container_name',
     'minimum_initial_purchase',
     'amount',
     'currency',
     'rider_category_id'
-]
+}
 
-EXPECTED_FARE_PRODUCTS_FIELDS = [
+FARE_PRODUCTS = {
     'fare_product_id',
     'fare_product_name',
     'rider_category_id',
@@ -48,9 +48,9 @@ EXPECTED_FARE_PRODUCTS_FIELDS = [
     'min_amount',
     'max_amount',
     'currency'
-]
+}
 
-EXPECTED_FARE_LEG_RULES_FIELDS = [
+FARE_LEG_RULES = {
     'leg_group_id',
     'fare_leg_name',
     'network_id',
@@ -72,9 +72,9 @@ EXPECTED_FARE_LEG_RULES_FIELDS = [
     'fare_container_id',
     'rider_category_id',
     'eligible_cap_id'
-]
+}
 
-EXPECTED_FARE_TRANSFER_RULES_FIELDS = [
+FARE_TRANSFER_RULES = {
     'from_leg_group_id',
     'to_leg_group_id',
     'is_symmetrical',
@@ -92,4 +92,4 @@ EXPECTED_FARE_TRANSFER_RULES_FIELDS = [
     'fare_container_id',
     'rider_category_id',
     'eligible_cap_id'
-]
+}

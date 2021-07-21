@@ -1,6 +1,3 @@
-import enum
-
-
 class Messages:
     def __init__(self):
         self.errors = []
@@ -17,12 +14,12 @@ class Messages:
         msg = ''
         if path:
             msg += path + ': '
-    
+
         msg += code
-    
+
         if extra_info:
             msg += '\n' + extra_info
-        
+
         msg += line_context
         return msg
 
@@ -45,4 +42,3 @@ class Messages:
             output += '\n\nNo warnings to report.'
 
         return output
-

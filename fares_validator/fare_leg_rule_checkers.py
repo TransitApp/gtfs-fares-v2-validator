@@ -1,5 +1,6 @@
-from .utils import check_linked_id
 from .errors import *
+from .utils import check_linked_id
+
 
 def check_areas(path, line, areas, unused_areas, messages):
     if line.is_symmetrical and line.is_symmetrical not in {'0', '1'}:
@@ -7,13 +8,13 @@ def check_areas(path, line, areas, unused_areas, messages):
 
     if line.contains_area_id and (not line.from_area_id and not line.to_area_id):
         messages.add_error(CONTAINS_AREA_WITHOUT_FROM_TO_AREA, line.line_num_error_msg)
-    
+
     if (line.from_area_id or line.to_area_id) and not line.is_symmetrical:
         messages.add_error(AREA_WITHOUT_IS_SYMMETRICAL, line.line_num_error_msg)
-    
+
     if (not line.from_area_id and not line.to_area_id) and line.is_symmetrical:
         messages.add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_AREA, line.line_num_error_msg)
-    
+
     if line.from_area_id and line.from_area_id in unused_areas:
         unused_areas.remove(line.from_area_id)
     if line.to_area_id and line.to_area_id in unused_areas:
@@ -22,6 +23,7 @@ def check_areas(path, line, areas, unused_areas, messages):
     check_linked_id(path, line, 'from_area_id', areas, messages)
     check_linked_id(path, line, 'to_area_id', areas, messages)
     check_linked_id(path, line, 'contains_area_id', areas, messages)
+
 
 def check_distances(line, messages):
     if line.distance_type and line.distance_type not in {'0', '1'}:
@@ -38,10 +40,10 @@ def check_distances(line, messages):
         try:
             dist = float(line.max_distance)
             if dist < 0:
-               messages.add_error(NEGATIVE_MAX_DISTANCE, line.line_num_error_msg)
+                messages.add_error(NEGATIVE_MAX_DISTANCE, line.line_num_error_msg)
         except ValueError:
             messages.add_error(INVALID_MAX_DISTANCE, line.line_num_error_msg)
-    
+
     if (line.min_distance or line.max_distance) and not line.distance_type:
         messages.add_error(DISTANCE_WITHOUT_DISTANCE_TYPE, line.line_num_error_msg)
     if (not line.min_distance and not line.max_distance) and line.distance_type:
