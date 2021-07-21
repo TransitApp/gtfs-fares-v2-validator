@@ -2,7 +2,7 @@
 Reads files introduced as part of the original GTFS specification
 """
 
-from . import diagnostics, utils
+from . import diagnostics, utils, schema
 from .errors import *
 from .warnings import *
 
@@ -10,14 +10,14 @@ from .warnings import *
 def networks(gtfs_root_dir, messages):
     networks = set()
 
-    for line in utils.read_csv_file(gtfs_root_dir / 'routes.txt', [], [], messages, NO_ROUTES):
+    for line in utils.read_csv_file(gtfs_root_dir, schema.ROUTES, messages):
         if line.network_id:
             networks.add(line.network_id)
 
     return networks
 
 
-def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
+def verify_stop_area_linkage(gtfs_root_dir, areas, messages, should_read_stop_times):
     stops_path = gtfs_root_dir / 'stops.txt'
     stop_times_path = gtfs_root_dir / 'stop_times.txt'
 
@@ -36,15 +36,12 @@ def stop_areas(gtfs_root_dir, areas, messages, should_read_stop_times):
 
 
 def service_ids(gtfs_root_dir, messages):
-    calendar_path = gtfs_root_dir / 'calendar.txt'
-    calendar_dates_path = gtfs_root_dir / 'calendar_dates.txt'
-
     service_ids = set()
-    if not calendar_path.exists() and not calendar_dates_path.exists():
+    if not (gtfs_root_dir / 'calendar.txt').exists() and not (gtfs_root_dir / 'calendar_dates.txt').exists():
         messages.add_warning(diagnostics.format(NO_SERVICE_IDS, ''))
         return service_ids
 
-    for line in utils.read_csv_file(calendar_path, ['service_id'], [], messages):
+    for line in utils.read_csv_file(gtfs_root_dir, schema.CALENDAR, messages):
         if not line.service_id:
             line.add_error(EMPTY_SERVICE_ID_CALENDAR)
             continue
@@ -54,7 +51,7 @@ def service_ids(gtfs_root_dir, messages):
 
         service_ids.add(line.service_id)
 
-    for line in utils.read_csv_file(calendar_dates_path, ['service_id'], [], messages):
+    for line in utils.read_csv_file(gtfs_root_dir, schema.CALENDAR_DATES, messages):
         if not line.service_id:
             line.add_error(EMPTY_SERVICE_ID_CALENDAR_DATES)
             continue

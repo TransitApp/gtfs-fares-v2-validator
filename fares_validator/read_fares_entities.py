@@ -2,7 +2,7 @@
 
 import re
 
-from . import defined_fields, diagnostics
+from . import schema, diagnostics
 from .errors import *
 from .fare_leg_rule_checkers import check_areas, check_distances
 from .fare_product_checkers import check_linked_fp_entities, check_bundle, check_durations_and_offsets
@@ -13,9 +13,8 @@ from .warnings import *
 
 def areas(gtfs_root_dir, messages):
     greater_area_id_by_area_id = {}
-    areas_path = gtfs_root_dir / 'areas.txt'
 
-    for line in read_csv_file(areas_path, ['area_id'], defined_fields.AREAS, messages, NO_AREAS):
+    for line in read_csv_file(gtfs_root_dir, schema.AREAS, messages):
         if line.area_id in greater_area_id_by_area_id:
             line.add_error(DUPLICATE_AREA_ID)
             continue
@@ -41,14 +40,13 @@ def areas(gtfs_root_dir, messages):
 
             greater_area_id = greater_area_id_by_area_id[greater_area_id]
 
-    return list(greater_area_id_by_area_id.keys())
+    return set(greater_area_id_by_area_id.keys())
 
 
 def timeframes(gtfs_root_dir, messages):
     timeframes = set()
-    for line in read_csv_file(gtfs_root_dir / 'timeframes.txt', ['timeframe_id', 'start_time', 'end_time'],
-                              defined_fields.TIMEFRAMES,
-                              messages, NO_TIMEFRAMES):
+    for line in read_csv_file(gtfs_root_dir, schema.TIMEFRAMES,
+                              messages):
         if not line.timeframe_id:
             line.add_error(EMPTY_TIMEFRAME_ID)
             continue
@@ -86,8 +84,8 @@ def timeframes(gtfs_root_dir, messages):
 
 def rider_categories(gtfs_root_dir, messages):
     rider_categories = set()
-    for line in read_csv_file(gtfs_root_dir / 'rider_categories.txt', ['rider_category_id'],
-                              defined_fields.RIDER_CATEGORIES, messages, NO_RIDER_CATEGORIES):
+    for line in read_csv_file(gtfs_root_dir,
+                              schema.RIDER_CATEGORIES, messages):
         min_age_int = 0
         if not line.rider_category_id:
             line.add_error(EMPTY_RIDER_CATEGORY_ID)
@@ -122,10 +120,9 @@ def rider_categories(gtfs_root_dir, messages):
 
 def fare_containers(gtfs_root_dir, rider_categories, messages):
     rider_category_by_fare_container = {}
-    fare_containers_path = gtfs_root_dir / 'fare_containers.txt'
 
-    for line in read_csv_file(fare_containers_path, ['fare_container_id', 'fare_container_name'],
-                              defined_fields.FARE_CONTAINERS, messages, NO_FARE_CONTAINERS):
+    for line in read_csv_file(gtfs_root_dir,
+                              schema.FARE_CONTAINERS, messages):
         if not line.fare_container_id:
             line.add_error(EMPTY_FARE_CONTAINER_ID)
             continue
@@ -162,8 +159,7 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
 
     fare_products_path = gtfs_root_dir / 'fare_products.txt'
 
-    for line in read_csv_file(fare_products_path, ['fare_product_id', 'fare_product_name'],
-                              defined_fields.FARE_PRODUCTS, messages, NO_FARE_PRODUCTS):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_PRODUCTS, messages):
         if not line.fare_product_id:
             line.add_error(EMPTY_FARE_PRODUCT_ID)
             continue
@@ -218,7 +214,7 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
     if not fare_leg_rules_path.exists():
         messages.add_warning(diagnostics.format(NO_FARE_LEG_RULES, ''))
 
-    for line in read_csv_file(fare_leg_rules_path, [], defined_fields.FARE_LEG_RULES, messages):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_LEG_RULES, messages):
         if line.leg_group_id:
             leg_group_ids.add(line.leg_group_id)
 
@@ -275,7 +271,7 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
     if not fare_transfer_rules_path.exists():
         messages.add_warning(diagnostics.format(NO_FARE_TRANSFER_RULES, ''))
 
-    for line in read_csv_file(fare_transfer_rules_path, [], defined_fields.FARE_TRANSFER_RULES, messages):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_TRANSFER_RULES, messages):
         check_leg_groups(line, leg_group_ids, unused_leg_groups)
         check_spans_and_transfer_ids(line)
         check_durations(line)

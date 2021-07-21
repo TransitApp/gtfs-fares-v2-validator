@@ -7,49 +7,72 @@ from .errors import *
 from .warnings import *
 
 
+class Schema:
+    FAKE_FIELDS = {'line_num_error_msg'}
+
+    def __init__(self, basename, required_fields, defined_fields, *,
+                 message_if_missing=None,
+                 suppress_undefined_field_warning=False):
+        self.basename = basename
+        self.required_fields = required_fields
+        self.defined_fields = defined_fields
+        self.valid_fields = self.defined_fields | self.required_fields | Schema.FAKE_FIELDS
+        self.message_if_missing = message_if_missing
+        self.suppress_undefined_field_warning = suppress_undefined_field_warning
+
+    def has_field(self, field_name):
+        return field_name in self.valid_fields
+
+
 class Entity:
-    def __init__(self, entity_filename, messages, original_dict):
-        self._entity_filename = entity_filename
+    def __init__(self, schema, messages, original_dict):
+        self._schema = schema
         self._messages = messages
         self._data = original_dict
 
     def __getattr__(self, item):
-        return self._data.get(item)
+        if self._schema.has_field(item):
+            return self._data.get(item)
+        else:
+            raise TypeError(f'Reference to undefined field {item} in code!')
+
 
     def add_error(self, code, extra_info=''):
-        self._messages.add_error(diagnostics.format(code, self.line_num_error_msg, self._entity_filename, extra_info))
+        self._messages.add_error(diagnostics.format(code, self.line_num_error_msg, self._schema.basename, extra_info))
 
     def add_warning(self, code, extra_info=''):
-        self._messages.add_warning(diagnostics.format(code, self.line_num_error_msg, self._entity_filename, extra_info))
+        self._messages.add_warning(diagnostics.format(code, self.line_num_error_msg, self._schema.basename, extra_info))
 
 
-def read_csv_file(path, required_fields, defined_fields, messages, message_if_missing=None):
+def read_csv_file(gtfs_root_dir, schema, messages):
+    path = gtfs_root_dir / schema.basename
+
     if not path.exists():
-        if message_if_missing:
-            messages.add_warning(diagnostics.format(message_if_missing))
+        if schema.message_if_missing:
+            messages.add_warning(diagnostics.format(schema.message_if_missing))
         return []
 
     with open(path, 'r', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile, skipinitialspace=True)
 
-        for required_field in required_fields:
+        for required_field in schema.required_fields:
             if required_field not in reader.fieldnames:
                 messages.add_error(
-                    diagnostics.format(REQUIRED_FIELD_MISSING, '', path.name, f'field:  {required_field}'))
+                    diagnostics.format(REQUIRED_FIELD_MISSING, '', schema.basename, f'field:  {required_field}'))
                 return []
 
-        if defined_fields:
+        if schema.defined_fields and not schema.suppress_undefined_field_warning:
             unexpected_fields = []
             for field in reader.fieldnames:
-                if field not in defined_fields:
+                if field not in schema.defined_fields:
                     unexpected_fields.append(field)
             if len(unexpected_fields):
-                messages.add_warning(diagnostics.format(UNEXPECTED_FIELDS, '', path.name,
+                messages.add_warning(diagnostics.format(UNEXPECTED_FIELDS, '', schema.basename,
                                                         f'\nColumn(s): {unexpected_fields}'))
 
         for line in reader:
             line['line_num_error_msg'] = f'\nLine: {reader.line_num}'
-            entity = Entity(path.name, messages, line)
+            entity = Entity(schema, messages, line)
             yield entity
 
 

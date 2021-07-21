@@ -3,9 +3,18 @@ from pathlib import Path
 from . import read_gtfs_entities, read_fares_entities, diagnostics
 from . import warnings as warn
 
-class GTFS:
+
+class Entities:
     def __init__(self):
-        self.areas = {}
+        self.area_ids = set()
+        self.network_ids = set()
+        self.service_ids = set()
+        self.timeframe_ids = set()
+        self.rider_category_ids = set()
+        self.rider_catrgory_by_fare_container = {}
+        self.linked_entities_by_fare_product = {}
+        self.leg_group_ids = set()
+
 
 def run_validator(gtfs_root_dir, should_read_stop_times):
     gtfs_root_dir = Path(gtfs_root_dir)
@@ -17,7 +26,7 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     dependent_entities['networks'] = read_gtfs_entities.networks(gtfs_root_dir, results)
 
-    read_gtfs_entities.stop_areas(gtfs_root_dir, dependent_entities['areas'], results, should_read_stop_times)
+    read_gtfs_entities.verify_stop_area_linkage(gtfs_root_dir, dependent_entities['areas'], results, should_read_stop_times)
 
     dependent_entities['service_ids'] = read_gtfs_entities.service_ids(gtfs_root_dir, results)
 
