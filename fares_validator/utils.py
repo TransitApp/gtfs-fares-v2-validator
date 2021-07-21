@@ -54,8 +54,7 @@ def read_csv_file(path, required_fields, defined_fields, messages, message_if_mi
             yield entity
 
 
-def check_fare_amount(path, line, fare_field, currency_field, messages):
-    filename = Path(path).name
+def check_fare_amount(line, fare_field, currency_field):
     fare = getattr(line, fare_field)
     currency = getattr(line, currency_field)
 
@@ -79,7 +78,7 @@ def check_fare_amount(path, line, fare_field, currency_field, messages):
         return False
 
 
-def check_amts(path, line, min_amt_exists, max_amt_exists, amt_exists, messages):
+def check_amts(path, line, min_amt_exists, max_amt_exists, amt_exists):
     filename = Path(path).name
     if (min_amt_exists or max_amt_exists) and amt_exists:
         line.add_error(AMOUNT_WITH_MIN_OR_MAX_AMOUNT)
@@ -109,7 +108,7 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
                     unused_areas.remove(area_id)
 
 
-def check_linked_id(path, line, fieldname, defined_ids, messages):
+def check_linked_id(line, fieldname, defined_ids):
     if not getattr(line, fieldname):
         return False
 
@@ -119,8 +118,8 @@ def check_linked_id(path, line, fieldname, defined_ids, messages):
     return True
 
 
-def check_linked_flr_ftr_entities(path, line, rider_categories, rider_category_by_fare_container,
-                                  linked_entities_by_fare_product, messages):
+def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare_container,
+                                  linked_entities_by_fare_product):
     if line.fare_product_id and line.fare_product_id not in linked_entities_by_fare_product:
         line.add_error(NONEXISTENT_FARE_PRODUCT_ID)
     if line.rider_category_id and line.rider_category_id not in rider_categories:

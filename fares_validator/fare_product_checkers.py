@@ -2,8 +2,7 @@ from .errors import *
 from .warnings import *
 
 
-def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product,
-                             messages):
+def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product):
     linked_entities = linked_entities_by_fare_product.get(line.fare_product_id)
     if not linked_entities:
         linked_entities = {
@@ -28,17 +27,17 @@ def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_cont
     linked_entities_by_fare_product[line.fare_product_id] = linked_entities
 
 
-def check_bundle(line, messages):
+def check_bundle(line):
     if line.bundle_amount:
         try:
             bundle_amt = int(line.bundle_amount)
             if bundle_amt < 0:
-                messages.add_error(INVALID_BUNDLE_AMOUNT, line.line_num_error_msg)
+                line.add_error(INVALID_BUNDLE_AMOUNT)
         except ValueError:
-            messages.add_error(INVALID_BUNDLE_AMOUNT, line.line_num_error_msg)
+            line.add_error(INVALID_BUNDLE_AMOUNT)
 
 
-def check_durations_and_offsets(line, messages):
+def check_durations_and_offsets(line):
     if line.duration_start and line.duration_start not in {'0', '1'}:
         line.add_error(INVALID_DURATION_START)
 

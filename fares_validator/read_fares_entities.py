@@ -137,9 +137,8 @@ def fare_containers(gtfs_root_dir, rider_categories, messages):
             line.add_error(EMPTY_FARE_CONTAINER_NAME)
             continue
 
-        amount_exists = check_fare_amount(fare_containers_path, line, 'amount', 'currency', messages)
-        min_purchase_exists = check_fare_amount(fare_containers_path, line, 'minimum_initial_purchase', 'currency',
-                                                messages)
+        amount_exists = check_fare_amount(line, 'amount', 'currency')
+        min_purchase_exists = check_fare_amount(line, 'minimum_initial_purchase', 'currency')
         if (not amount_exists and not min_purchase_exists) and line.currency:
             line.add_error(CURRENCY_WITHOUT_AMOUNT)
 
@@ -176,19 +175,19 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
             continue
 
         check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container,
-                                 linked_entities_by_fare_product, messages)
+                                 linked_entities_by_fare_product)
 
-        min_amt_exists = check_fare_amount(fare_products_path, line, 'min_amount', 'currency', messages)
-        max_amt_exists = check_fare_amount(fare_products_path, line, 'max_amount', 'currency', messages)
-        amt_exists = check_fare_amount(fare_products_path, line, 'amount', 'currency', messages)
+        min_amt_exists = check_fare_amount(line, 'min_amount', 'currency')
+        max_amt_exists = check_fare_amount(line, 'max_amount', 'currency')
+        amt_exists = check_fare_amount(line, 'amount', 'currency')
         if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             line.add_error(CURRENCY_WITHOUT_AMOUNT)
 
-        check_amts(fare_products_path, line, min_amt_exists, max_amt_exists, amt_exists, messages)
+        check_amts(fare_products_path, line, min_amt_exists, max_amt_exists, amt_exists)
 
-        check_bundle(line, messages)
-        check_linked_id(fare_products_path, line, 'service_id', service_ids, messages)
-        timeframe_exists = check_linked_id(fare_products_path, line, 'timeframe_id', timeframe_ids, messages)
+        check_bundle(line)
+        check_linked_id(line, 'service_id', service_ids)
+        timeframe_exists = check_linked_id(line, 'timeframe_id', timeframe_ids)
 
         if line.timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.timeframe_id)
@@ -199,7 +198,7 @@ def fare_products(gtfs_root_dir, dependent_entities, unused_timeframes, messages
             if line.timeframe_type:
                 line.add_error(TIMEFRAME_TYPE_WITHOUT_TIMEFRAME)
 
-        check_durations_and_offsets(line, messages)
+        check_durations_and_offsets(line)
 
     return linked_entities_by_fare_product
 
@@ -226,45 +225,43 @@ def fare_leg_rules(gtfs_root_dir, dependent_entities, unused_timeframes, message
         if line.leg_group_id and line.leg_group_id not in leg_group_ids:
             leg_group_ids.append(line.leg_group_id)
 
-        check_areas(fare_leg_rules_path, line, areas, unused_areas, messages)
+        check_areas(line, areas, unused_areas)
 
-        check_linked_id(fare_leg_rules_path, line, 'network_id', networks, messages)
+        check_linked_id(line, 'network_id', networks)
         if line.network_id in unused_networks:
             unused_networks.remove(line.network_id)
 
-        check_linked_id(fare_leg_rules_path, line, 'from_timeframe_id', timeframe_ids, messages)
+        check_linked_id(line, 'from_timeframe_id', timeframe_ids)
         if line.from_timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.from_timeframe_id)
-        check_linked_id(fare_leg_rules_path, line, 'to_timeframe_id', timeframe_ids, messages)
+        check_linked_id(line, 'to_timeframe_id', timeframe_ids)
         if line.to_timeframe_id in unused_timeframes:
             unused_timeframes.remove(line.to_timeframe_id)
 
-        check_linked_id(fare_leg_rules_path, line, 'service_id', service_ids, messages)
+        check_linked_id(line, 'service_id', service_ids)
 
-        check_distances(line, messages)
+        check_distances(line)
 
-        min_amt_exists = check_fare_amount(fare_leg_rules_path, line, 'min_amount', 'currency', messages)
-        max_amt_exists = check_fare_amount(fare_leg_rules_path, line, 'max_amount', 'currency', messages)
-        amt_exists = check_fare_amount(fare_leg_rules_path, line, 'amount', 'currency', messages)
+        min_amt_exists = check_fare_amount(line, 'min_amount', 'currency')
+        max_amt_exists = check_fare_amount(line, 'max_amount', 'currency')
+        amt_exists = check_fare_amount(line, 'amount', 'currency')
         if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             line.add_error(CURRENCY_WITHOUT_AMOUNT)
-        check_amts(fare_leg_rules_path, line, min_amt_exists, max_amt_exists, amt_exists, messages)
+        check_amts(fare_leg_rules_path, line, min_amt_exists, max_amt_exists, amt_exists)
         if (min_amt_exists or max_amt_exists or amt_exists) and line.fare_product_id:
             line.add_error(AMOUNT_WITH_FARE_PRODUCT)
 
         if line.fare_leg_name and line.fare_product_id:
             line.add_error(FARE_LEG_NAME_WITH_FARE_PRODUCT)
 
-        check_linked_flr_ftr_entities(fare_leg_rules_path, line, rider_categories, rider_category_by_fare_container,
-                                      linked_entities_by_fare_product, messages)
+        check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare_container,
+                                      linked_entities_by_fare_product)
 
     if len(unused_areas):
-        warning_info = 'Unused areas: ' + str(unused_areas)
-        messages.add_warning(diagnostics.format(UNUSED_AREA_IDS, '', '', warning_info))
+        messages.add_warning(diagnostics.format(UNUSED_AREA_IDS, '', '', f'Unused areas: {unused_areas}'))
 
     if len(unused_networks):
-        warning_info = 'Unused networks: ' + str(unused_networks)
-        messages.add_warning(diagnostics.format(UNUSED_NETWORK_IDS, '', '', warning_info))
+        messages.add_warning(diagnostics.format(UNUSED_NETWORK_IDS, '', '', f'Unused networks: {unused_networks}'))
 
     return leg_group_ids
 
@@ -282,17 +279,17 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
         messages.add_warning(diagnostics.format(NO_FARE_TRANSFER_RULES, ''))
 
     for line in read_csv_file(fare_transfer_rules_path, [], defined_fields.FARE_TRANSFER_RULES, messages):
-        check_leg_groups(line, leg_group_ids, unused_leg_groups, messages)
-        check_spans_and_transfer_ids(line, messages)
-        check_durations(line, messages)
+        check_leg_groups(line, leg_group_ids, unused_leg_groups)
+        check_spans_and_transfer_ids(line)
+        check_durations(line)
 
-        min_amt_exists = check_fare_amount(fare_transfer_rules_path, line, 'min_amount', 'currency', messages)
-        max_amt_exists = check_fare_amount(fare_transfer_rules_path, line, 'max_amount', 'currency', messages)
-        amt_exists = check_fare_amount(fare_transfer_rules_path, line, 'amount', 'currency', messages)
+        min_amt_exists = check_fare_amount(line, 'min_amount', 'currency',)
+        max_amt_exists = check_fare_amount(line, 'max_amount', 'currency')
+        amt_exists = check_fare_amount(line, 'amount', 'currency')
         if (not min_amt_exists and not max_amt_exists and not amt_exists) and line.currency:
             line.add_error(CURRENCY_WITHOUT_AMOUNT)
 
-        check_amts(fare_transfer_rules_path, line, min_amt_exists, max_amt_exists, amt_exists, messages)
+        check_amts(fare_transfer_rules_path, line, min_amt_exists, max_amt_exists, amt_exists)
 
         if (min_amt_exists or max_amt_exists or amt_exists) and not line.fare_transfer_type:
             line.add_error(AMOUNT_WITHOUT_FARE_TRANSFER_TYPE)
@@ -301,8 +298,8 @@ def fare_transfer_rules(gtfs_root_dir, dependent_entities, messages):
         if line.fare_transfer_type and (line.fare_transfer_type not in {'0', '1', '2', '3'}):
             line.add_error(INVALID_FARE_TRANSFER_TYPE)
 
-        check_linked_flr_ftr_entities(fare_transfer_rules_path, line, rider_categories,
-                                      rider_category_by_fare_container, linked_entities_by_fare_product, messages)
+        check_linked_flr_ftr_entities(line, rider_categories,
+                                      rider_category_by_fare_container, linked_entities_by_fare_product)
 
     if len(unused_leg_groups):
         messages.add_warning(diagnostics.format(UNUSED_LEG_GROUPS, '', '',

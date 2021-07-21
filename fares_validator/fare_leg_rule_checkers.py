@@ -1,8 +1,8 @@
 from .errors import *
-from .utils import check_linked_id
+from . import utils
 
 
-def check_areas(path, line, areas, unused_areas, messages):
+def check_areas(line, areas, unused_areas):
     if line.is_symmetrical and line.is_symmetrical not in {'0', '1'}:
         line.add_error(INVALID_IS_SYMMETRICAL_LEG_RULES)
 
@@ -20,12 +20,12 @@ def check_areas(path, line, areas, unused_areas, messages):
     if line.to_area_id and line.to_area_id in unused_areas:
         unused_areas.remove(line.from_area_id)
 
-    check_linked_id(path, line, 'from_area_id', areas, messages)
-    check_linked_id(path, line, 'to_area_id', areas, messages)
-    check_linked_id(path, line, 'contains_area_id', areas, messages)
+    utils.check_linked_id(line, 'from_area_id', areas)
+    utils.check_linked_id(line, 'to_area_id', areas)
+    utils.check_linked_id(line, 'contains_area_id', areas)
 
 
-def check_distances(line, messages):
+def check_distances(line):
     if line.distance_type and line.distance_type not in {'0', '1'}:
         line.add_error(INVALID_DISTANCE_TYPE)
 

@@ -1,7 +1,7 @@
 from .errors import *
 
 
-def check_leg_groups(line, leg_group_ids, unused_leg_groups, messages):
+def check_leg_groups(line, leg_group_ids, unused_leg_groups):
     if line.is_symmetrical and line.is_symmetrical not in {'0', '1'}:
         line.add_error(INVALID_IS_SYMMETRICAL_TRANSFER_RULES)
     if (line.from_leg_group_id or line.to_leg_group_id) and not line.is_symmetrical:
@@ -19,7 +19,7 @@ def check_leg_groups(line, leg_group_ids, unused_leg_groups, messages):
         unused_leg_groups.remove(line.to_leg_group_id)
 
 
-def check_spans_and_transfer_ids(line, messages):
+def check_spans_and_transfer_ids(line):
     if line.spanning_limit:
         if line.from_leg_group_id != line.to_leg_group_id:
             line.add_error(SPANNING_LIMIT_WITH_BAD_LEGS)
@@ -47,7 +47,7 @@ def check_spans_and_transfer_ids(line, messages):
             line.add_error(INVALID_TRANSFER_SEQUENCE)
 
 
-def check_durations(line, messages):
+def check_durations(line):
     if line.duration_limit_type and line.duration_limit_type not in {'0', '1', '2', '3'}:
         line.add_error(INVALID_DURATION_LIMIT_TYPE)
 
