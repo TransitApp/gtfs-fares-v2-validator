@@ -90,20 +90,23 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
     with open(path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
-        if 'area_id' in reader.fieldnames:
-            for line in reader:
-                area_id = line.get('area_id')
+        # Avoid parsing huge file if areas are not in use
+        if 'area_id' not in reader.fieldnames:
+            return
 
-                if not area_id:
-                    continue
+        for line in reader:
+            area_id = line.get('area_id')
 
-                if area_id not in areas:
-                    line_num_error_msg = '\nLine: ' + str(reader.line_num)
-                    messages.add_error(diagnostics.format(NONEXISTENT_AREA_ID, line_num_error_msg, stop_or_stop_time))
-                    continue
+            if not area_id:
+                continue
 
-                if area_id in unused_areas:
-                    unused_areas.remove(area_id)
+            if area_id not in areas:
+                line_num_error_msg = '\nLine: ' + str(reader.line_num)
+                messages.add_error(diagnostics.format(NONEXISTENT_AREA_ID, line_num_error_msg, stop_or_stop_time))
+                continue
+
+            if area_id in unused_areas:
+                unused_areas.remove(area_id)
 
 
 def check_linked_id(line, fieldname, defined_ids):
