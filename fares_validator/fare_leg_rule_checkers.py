@@ -18,7 +18,7 @@ def check_areas(line, areas, unused_areas):
     if line.from_area_id and line.from_area_id in unused_areas:
         unused_areas.remove(line.from_area_id)
     if line.to_area_id and line.to_area_id in unused_areas:
-        unused_areas.remove(line.from_area_id)
+        unused_areas.remove(line.to_area_id)
 
     utils.check_linked_id(line, 'from_area_id', areas)
     utils.check_linked_id(line, 'to_area_id', areas)
