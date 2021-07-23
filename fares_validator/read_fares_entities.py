@@ -23,6 +23,7 @@ def areas(gtfs_root_dir, messages):
             greater_area_ids_by_area_id[line.area_id] = []
 
         if line.greater_area_id:
+            # avoid duplicate rows in areas.txt on (area_id, greater_area_id)
             if line.greater_area_id in greater_area_ids_by_area_id[line.area_id]:
                 line.add_error(DUPLICATE_AREAS_TXT_ENTRY)
             else:
