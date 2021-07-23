@@ -8,49 +8,42 @@ def test_errors_simple_files():
     results = run_validator(test_data_dir / 'bad_gtfs_simple', True)
     
     # Areas errors
-    assert errors.DUPLICATE_AREA_ID in results.errors[0]
-    assert errors.EMPTY_AREA_ID in results.errors[1]
-    assert errors.GREATER_AREA_ID_LOOP in results.errors[2]
-
-    # Stops errors
-    assert errors.NONEXISTENT_AREA_ID in results.errors[5]
-
-    # Stop times errors
-    assert errors.NONEXISTENT_AREA_ID in results.errors[6]
+    assert errors.EMPTY_AREA_ID in results.errors[0]
+    assert errors.GREATER_AREA_ID_LOOP in results.errors[1]
 
     # Calendar errors
-    assert errors.EMPTY_SERVICE_ID_CALENDAR in results.errors[7]
-    assert errors.DUPLICATE_SERVICE_ID in results.errors[8]
+    assert errors.EMPTY_SERVICE_ID_CALENDAR in results.errors[2]
+    assert errors.DUPLICATE_SERVICE_ID in results.errors[3]
     
     # Calendar dates errors
-    assert errors.EMPTY_SERVICE_ID_CALENDAR_DATES in results.errors[9]
+    assert errors.EMPTY_SERVICE_ID_CALENDAR_DATES in results.errors[4]
 
     # Timeframes errors
-    assert errors.INVALID_TIME_FORMAT in results.errors[10]
-    assert errors.INVALID_TIME_FORMAT in results.errors[11]
-    assert errors.EMPTY_START_TIME in results.errors[12]
-    assert errors.EMPTY_END_TIME in results.errors[13]
-    assert errors.EMPTY_TIMEFRAME_ID in results.errors[14]
+    assert errors.INVALID_TIME_FORMAT in results.errors[5]
+    assert errors.INVALID_TIME_FORMAT in results.errors[6]
+    assert errors.EMPTY_START_TIME in results.errors[7]
+    assert errors.EMPTY_END_TIME in results.errors[8]
+    assert errors.EMPTY_TIMEFRAME_ID in results.errors[9]
 
     # Rider categories errors
-    assert errors.EMPTY_RIDER_CATEGORY_ID in results.errors[15]
-    assert errors.NEGATIVE_MIN_AGE in results.errors[16]
-    assert errors.NEGATIVE_MAX_AGE in results.errors[17]
-    assert errors.NON_INT_MIN_AGE in results.errors[18]
-    assert errors.NON_INT_MAX_AGE in results.errors[19]
+    assert errors.EMPTY_RIDER_CATEGORY_ID in results.errors[10]
+    assert errors.NEGATIVE_MIN_AGE in results.errors[11]
+    assert errors.NEGATIVE_MAX_AGE in results.errors[12]
+    assert errors.NON_INT_MIN_AGE in results.errors[13]
+    assert errors.NON_INT_MAX_AGE in results.errors[14]
 
     # Fare containers errors
-    assert errors.EMPTY_FARE_CONTAINER_ID in results.errors[20]
-    assert errors.EMPTY_FARE_CONTAINER_NAME in results.errors[21]
-    assert errors.NONEXISTENT_RIDER_CATEGORY_ID in results.errors[22]
-    assert errors.AMOUNT_WITHOUT_CURRENCY in results.errors[23]
-    assert errors.INVALID_AMOUNT_FORMAT in results.errors[24]
-    assert errors.AMOUNT_WITHOUT_CURRENCY in results.errors[25]
-    assert errors.INVALID_AMOUNT_FORMAT in results.errors[26]
-    assert errors.CURRENCY_WITHOUT_AMOUNT in results.errors[27]
-    assert errors.DUPLICATE_FARE_CONTAINER_ID in results.errors[28]
+    assert errors.EMPTY_FARE_CONTAINER_ID in results.errors[15]
+    assert errors.EMPTY_FARE_CONTAINER_NAME in results.errors[16]
+    assert errors.NONEXISTENT_RIDER_CATEGORY_ID in results.errors[17]
+    assert errors.AMOUNT_WITHOUT_CURRENCY in results.errors[18]
+    assert errors.INVALID_AMOUNT_FORMAT in results.errors[19]
+    assert errors.AMOUNT_WITHOUT_CURRENCY in results.errors[20]
+    assert errors.INVALID_AMOUNT_FORMAT in results.errors[21]
+    assert errors.CURRENCY_WITHOUT_AMOUNT in results.errors[22]
+    assert errors.DUPLICATE_FARE_CONTAINER_ID in results.errors[23]
 
-    assert len(results.errors) == 29
+    assert len(results.errors) == 24
 
 def test_errors_fare_products():
     results = run_validator(test_data_dir / 'bad_fare_products', False)

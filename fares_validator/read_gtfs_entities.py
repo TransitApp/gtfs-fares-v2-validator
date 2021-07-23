@@ -17,22 +17,22 @@ def networks(gtfs_root_dir, messages):
     return networks
 
 
-def verify_stop_area_linkage(gtfs_root_dir, areas, messages, should_read_stop_times):
+def read_areas_in_stop_files(gtfs_root_dir, areas, messages, should_read_stop_times):
     stops_path = gtfs_root_dir / 'stops.txt'
     stop_times_path = gtfs_root_dir / 'stop_times.txt'
 
     unused_areas = areas.copy()
 
     if stops_path.exists():
-        utils.check_areas_of_file(stops_path, 'stop', areas, unused_areas, messages)
+        utils.read_areas_of_file(stops_path, areas, unused_areas)
     else:
         messages.add_warning(diagnostics.format(NO_STOPS, ''))
 
     if should_read_stop_times and stop_times_path.exists():
-        utils.check_areas_of_file(stop_times_path, 'stop_time', areas, unused_areas, messages)
+        utils.read_areas_of_file(stops_path, areas, unused_areas)
 
     if len(unused_areas):
-        messages.add_warning(diagnostics.format(UNUSED_AREAS_IN_STOPS, '', '', f'Unused areas: {unused_areas}'))
+        messages.add_warning(diagnostics.format(UNUSED_AREAS_IN_STOPS, '', '', f'Unused areas: {str(unused_areas)}'))
 
 
 def service_ids(gtfs_root_dir, messages):

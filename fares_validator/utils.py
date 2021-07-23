@@ -109,7 +109,7 @@ def check_amts(path, line, min_amt_exists, max_amt_exists, amt_exists):
         line.add_error(NO_AMOUNT_DEFINED)
 
 
-def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
+def read_areas_of_file(path, areas, unused_areas):
     with open(path, 'r', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile, skipinitialspace=True)
 
@@ -122,14 +122,12 @@ def check_areas_of_file(path, stop_or_stop_time, areas, unused_areas, messages):
 
             if not area_id:
                 continue
-
-            if area_id not in areas:
-                messages.add_error(
-                    diagnostics.format(NONEXISTENT_AREA_ID, f'\nLine: {reader.line_num}', stop_or_stop_time))
-                continue
-
+            
             if area_id in unused_areas:
                 unused_areas.remove(area_id)
+
+            if area_id not in areas:
+                areas.add(area_id)
 
 
 def check_linked_id(line, fieldname, defined_ids):
@@ -164,3 +162,42 @@ def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare
         fc_rider_cat = rider_category_by_fare_container[line.fare_container_id]
         if fc_rider_cat and (fc_rider_cat != line.rider_category_id):
             line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER)
+
+
+# This uses an adapted version of Kahn's algorithm
+# https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
+def check_area_cycles(greater_area_ids_by_area_id, messages, diagnostics):
+    non_parent_areas = list(greater_area_ids_by_area_id.keys())
+    sub_areas_by_area_id = {}
+
+    for area_id in greater_area_ids_by_area_id:
+        if greater_area_ids_by_area_id[area_id]:
+            for greater_area_id in greater_area_ids_by_area_id[area_id]:
+                if greater_area_id not in greater_area_ids_by_area_id:
+                    messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
+                                                          f'greater_area_id: {greater_area_id}'))
+                    return
+                if greater_area_id not in sub_areas_by_area_id:
+                    sub_areas_by_area_id[greater_area_id] = []
+                sub_areas_by_area_id[greater_area_id].append(area_id)
+                if greater_area_id in non_parent_areas:
+                    non_parent_areas.remove(greater_area_id)
+    
+    sorted_area_ids = []
+    while len(non_parent_areas) > 0:
+        area_id = non_parent_areas[0]
+        non_parent_areas.remove(area_id)
+        sorted_area_ids.append(area_id)
+        for greater_area_id in greater_area_ids_by_area_id[area_id]:
+            sub_areas_by_area_id[greater_area_id].remove(area_id)
+            if len(sub_areas_by_area_id[greater_area_id]) == 0:
+                non_parent_areas.append(greater_area_id)
+
+    edges = list(sub_areas_by_area_id.values())
+    all_edges = []
+    for edges_from_area in edges:
+        all_edges = all_edges + edges_from_area
+
+    if len(all_edges) > 0:
+        messages.add_error(diagnostics.format(GREATER_AREA_ID_LOOP, '', '',
+                                              f'area_ids: {str(all_edges)}'))
