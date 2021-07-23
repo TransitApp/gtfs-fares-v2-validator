@@ -16,6 +16,7 @@ TOO_MANY_AMOUNT_DECIMALS = 'An amount field has many decimals for the currency d
 UNRECOGNIZED_CURRENCY_CODE = 'A currency code is unrecognized.'
 
 # areas.txt
+DUPLICATE_AREAS_TXT_ENTRY = 'There are two entries in areas.txt with the same area_id and greater_area_id.'
 EMPTY_AREA_ID = 'An entry in areas.txt has empty area id.'
 GREATER_AREA_ID_LOOP = 'Some area_ids have themselves as greater_area_ids.'
 UNDEFINED_GREATER_AREA_ID = 'A greater_area_id is not defined as an area_id in areas.txt.'

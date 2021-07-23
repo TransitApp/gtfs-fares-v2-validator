@@ -4,3 +4,4 @@ area_1,area_2
 area_2,area_3
 area_3,area_1
 area_4,
+area_3,area_1
