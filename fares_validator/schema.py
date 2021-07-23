@@ -1,33 +1,46 @@
-EXPECTED_AREAS_FIELDS = [
-    'area_id',
-    'area_name',
-    'greater_area_id'
-]
+from . import warnings
+from .utils import Schema
 
-EXPECTED_TIMEFRAMES_FIELDS = [
+AREAS = Schema('areas.txt',
+               required_fields={'area_id'},
+               defined_fields={
+                   'area_id',
+                   'area_name',
+                   'greater_area_id'
+               }, message_if_missing=warnings.NO_AREAS)
+
+ROUTES = Schema('routes.txt', set(), {'network_id'},
+                message_if_missing=warnings.NO_ROUTES,
+                suppress_undefined_field_warning=True)
+
+CALENDAR = Schema('calendar.txt', {'service_id'}, set())
+
+CALENDAR_DATES = Schema('calendar_dates.txt', {'service_id'}, set())
+
+TIMEFRAMES = Schema('timeframes.txt', {'timeframe_id', 'start_time', 'end_time'}, {
     'timeframe_id',
     'start_time',
     'end_time'
-]
+}, message_if_missing=warnings.NO_TIMEFRAMES)
 
-EXPECTED_RIDER_CATEGORIES_FIELDS = [
+RIDER_CATEGORIES = Schema('rider_categories.txt', {'rider_category_id'}, {
     'rider_category_id',
     'min_age',
     'max_age',
     'rider_category_name',
     'eligibility_url'
-]
+}, message_if_missing=warnings.NO_RIDER_CATEGORIES)
 
-EXPECTED_FARE_CONTAINERS_FIELDS = [
+FARE_CONTAINERS = Schema('fare_containers.txt', {'fare_container_id', 'fare_container_name'}, {
     'fare_container_id',
     'fare_container_name',
     'minimum_initial_purchase',
     'amount',
     'currency',
     'rider_category_id'
-]
+}, message_if_missing=warnings.NO_FARE_CONTAINERS)
 
-EXPECTED_FARE_PRODUCTS_FIELDS = [
+FARE_PRODUCTS = Schema('fare_products.txt', {'fare_product_id', 'fare_product_name'}, {
     'fare_product_id',
     'fare_product_name',
     'rider_category_id',
@@ -48,9 +61,9 @@ EXPECTED_FARE_PRODUCTS_FIELDS = [
     'min_amount',
     'max_amount',
     'currency'
-]
+}, message_if_missing=warnings.NO_FARE_PRODUCTS)
 
-EXPECTED_FARE_LEG_RULES_FIELDS = [
+FARE_LEG_RULES = Schema('fare_leg_rules.txt', set(), {
     'leg_group_id',
     'fare_leg_name',
     'network_id',
@@ -72,9 +85,9 @@ EXPECTED_FARE_LEG_RULES_FIELDS = [
     'fare_container_id',
     'rider_category_id',
     'eligible_cap_id'
-]
+})
 
-EXPECTED_FARE_TRANSFER_RULES_FIELDS = [
+FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt', set(), {
     'from_leg_group_id',
     'to_leg_group_id',
     'is_symmetrical',
@@ -92,4 +105,4 @@ EXPECTED_FARE_TRANSFER_RULES_FIELDS = [
     'fare_container_id',
     'rider_category_id',
     'eligible_cap_id'
-]
+})
