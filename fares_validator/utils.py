@@ -152,11 +152,11 @@ def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare
     if line.fare_product_id:
         if line.rider_category_id:
             fp_rider_cats = linked_entities_by_fare_product[line.fare_product_id].rider_category_ids
-            if len(fp_rider_cats) and (line.rider_category_id not in fp_rider_cats):
+            if len(fp_rider_cats) and (line.rider_category_id not in fp_rider_cats) and ('' not in fp_rider_cats):
                 line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT)
         if line.fare_container_id:
             fp_fare_containers = linked_entities_by_fare_product[line.fare_product_id].fare_container_ids
-            if len(fp_fare_containers) and (line.fare_container_id not in fp_fare_containers):
+            if len(fp_fare_containers) and (line.fare_container_id not in fp_fare_containers) and ('' not in fp_fare_containers):
                 line.add_error(CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT)
     if line.rider_category_id and line.fare_container_id:
         fc_rider_cat = rider_category_by_fare_container[line.fare_container_id]

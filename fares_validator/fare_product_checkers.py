@@ -15,6 +15,9 @@ def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_cont
         linked_entities.rider_category_ids.add(line.rider_category_id)
         if line.rider_category_id not in rider_categories:
             line.add_error(NONEXISTENT_RIDER_CATEGORY_ID)
+    else:
+        if not '' in linked_entities.rider_category_ids:
+            linked_entities.rider_category_ids.add('')
 
     if line.fare_container_id:
         linked_entities.fare_container_ids.add(line.fare_container_id)
@@ -24,6 +27,9 @@ def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_cont
         fare_container_rider_cat = rider_category_by_fare_container.get(line.fare_container_id)
         if line.rider_category_id and fare_container_rider_cat and (line.rider_category_id != fare_container_rider_cat):
             line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER)
+    else:
+        if not '' in linked_entities.rider_category_ids:
+            linked_entities.fare_container_ids.add('')
 
     linked_entities_by_fare_product[line.fare_product_id] = linked_entities
 
