@@ -16,8 +16,7 @@ def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_cont
         if line.rider_category_id not in rider_categories:
             line.add_error(NONEXISTENT_RIDER_CATEGORY_ID)
     else:
-        if ''  not in linked_entities.rider_category_ids:
-            linked_entities.rider_category_ids.add('')
+        linked_entities.rider_category_ids.add('')
 
     if line.fare_container_id:
         linked_entities.fare_container_ids.add(line.fare_container_id)
