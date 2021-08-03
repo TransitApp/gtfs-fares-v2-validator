@@ -29,7 +29,7 @@ def areas(gtfs_root_dir, messages):
             else:
                 greater_area_ids_by_area_id[line.area_id].append(line.greater_area_id)
 
-    check_area_cycles(greater_area_ids_by_area_id, messages, diagnostics)
+    check_area_cycles(greater_area_ids_by_area_id, messages)
 
     return set(greater_area_ids_by_area_id.keys())
 
