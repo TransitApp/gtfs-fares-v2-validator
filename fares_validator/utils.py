@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+from collections import deque
 
 from . import diagnostics
 from .decimals_by_currency import decimals_by_currency
@@ -167,7 +168,7 @@ def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare
 # This uses an adapted version of Kahn's algorithm
 # https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
 def check_area_cycles(greater_area_ids_by_area_id, messages):
-    non_parent_areas = list(greater_area_ids_by_area_id.keys())
+    non_parent_areas = deque(list(greater_area_ids_by_area_id.keys()))
     sub_areas_by_area_id = {}
 
     for area_id in greater_area_ids_by_area_id:
@@ -185,8 +186,7 @@ def check_area_cycles(greater_area_ids_by_area_id, messages):
     
     sorted_area_ids = []
     while len(non_parent_areas) > 0:
-        area_id = non_parent_areas[0]
-        non_parent_areas.remove(area_id)
+        area_id = non_parent_areas.popleft()
         sorted_area_ids.append(area_id)
         for greater_area_id in greater_area_ids_by_area_id[area_id]:
             sub_areas_by_area_id[greater_area_id].remove(area_id)
