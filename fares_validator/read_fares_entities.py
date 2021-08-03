@@ -19,8 +19,7 @@ def areas(gtfs_root_dir, messages):
             line.add_error(EMPTY_AREA_ID)
             continue
 
-        if line.area_id not in greater_area_ids_by_area_id:
-            greater_area_ids_by_area_id[line.area_id] = []
+        greater_area_ids_by_area_id.setdefault(line.area_id, [])
 
         if line.greater_area_id:
             # avoid duplicate rows in areas.txt on (area_id, greater_area_id)
