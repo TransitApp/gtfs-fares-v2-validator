@@ -173,17 +173,17 @@ def check_area_cycles(greater_area_ids_by_area_id, messages):
 
     for area_id, greater_areas in greater_area_ids_by_area_id.items():
         if not greater_areas:
-             continue
-         for greater_area_id in greater_areas:
-                if greater_area_id not in greater_area_ids_by_area_id:
-                    messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
-                                                          f'greater_area_id: {greater_area_id}'))
-                    return
-                if greater_area_id not in in_degree_by_area_id:
-                    in_degree_by_area_id[greater_area_id] = 0
-                in_degree_by_area_id[greater_area_id] += 1
-                if greater_area_id in non_parent_areas:
-                    non_parent_areas.remove(greater_area_id)
+            continue
+        for greater_area_id in greater_areas:
+            if greater_area_id not in greater_area_ids_by_area_id:
+                messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
+                                                        f'greater_area_id: {greater_area_id}'))
+                return
+            if greater_area_id not in in_degree_by_area_id:
+                in_degree_by_area_id[greater_area_id] = 0
+            in_degree_by_area_id[greater_area_id] += 1
+            if greater_area_id in non_parent_areas:
+                non_parent_areas.remove(greater_area_id)
     
     sorted_area_ids = []
     while len(non_parent_areas) > 0:
