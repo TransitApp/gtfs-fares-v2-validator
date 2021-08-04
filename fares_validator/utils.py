@@ -169,7 +169,7 @@ def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare
 # https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
 def check_area_cycles(greater_area_ids_by_area_id, messages):
     non_parent_areas = deque(list(greater_area_ids_by_area_id.keys()))
-    sub_areas_by_area_id = {}
+    in_degree_by_area_id = {}
 
     for area_id in greater_area_ids_by_area_id:
         if greater_area_ids_by_area_id[area_id]:
@@ -178,9 +178,9 @@ def check_area_cycles(greater_area_ids_by_area_id, messages):
                     messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
                                                           f'greater_area_id: {greater_area_id}'))
                     return
-                if greater_area_id not in sub_areas_by_area_id:
-                    sub_areas_by_area_id[greater_area_id] = []
-                sub_areas_by_area_id[greater_area_id].append(area_id)
+                if greater_area_id not in in_degree_by_area_id:
+                    in_degree_by_area_id[greater_area_id] = 0
+                in_degree_by_area_id[greater_area_id] += 1
                 if greater_area_id in non_parent_areas:
                     non_parent_areas.remove(greater_area_id)
     
@@ -189,15 +189,15 @@ def check_area_cycles(greater_area_ids_by_area_id, messages):
         area_id = non_parent_areas.popleft()
         sorted_area_ids.append(area_id)
         for greater_area_id in greater_area_ids_by_area_id[area_id]:
-            sub_areas_by_area_id[greater_area_id].remove(area_id)
-            if len(sub_areas_by_area_id[greater_area_id]) == 0:
+            in_degree_by_area_id[greater_area_id] -= 1
+            if in_degree_by_area_id[greater_area_id] == 0:
                 non_parent_areas.append(greater_area_id)
 
-    edges = list(sub_areas_by_area_id.values())
-    all_edges = []
-    for edges_from_area in edges:
-        all_edges = all_edges + edges_from_area
+    nonzero_in_degree_area_ids = []
+    for area_id in in_degree_by_area_id:
+        if in_degree_by_area_id[area_id] > 0:
+            nonzero_in_degree_area_ids.append(area_id)
 
-    if len(all_edges) > 0:
+    if len(nonzero_in_degree_area_ids) > 0:
         messages.add_error(diagnostics.format(GREATER_AREA_ID_LOOP, '', '',
-                                              f'area_ids: {str(all_edges)}'))
+                                              f'area_ids: {str(nonzero_in_degree_area_ids)}'))
