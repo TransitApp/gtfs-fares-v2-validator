@@ -168,7 +168,7 @@ def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare
 # This uses an adapted version of Kahn's algorithm
 # https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
 def check_area_cycles(greater_area_ids_by_area_id, messages):
-    non_parent_areas = deque(list(greater_area_ids_by_area_id.keys()))
+    non_parent_areas = deque(greater_area_ids_by_area_id.keys())
     in_degree_by_area_id = {}
 
     for area_id in greater_area_ids_by_area_id:
