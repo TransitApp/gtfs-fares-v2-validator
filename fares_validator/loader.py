@@ -19,7 +19,7 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     gtfs.networks = read_gtfs_entities.networks(gtfs_root_dir, results)
 
-    read_gtfs_entities.verify_stop_area_linkage(gtfs_root_dir, gtfs.areas, results, should_read_stop_times)
+    read_gtfs_entities.read_areas_in_stop_files(gtfs_root_dir, gtfs.areas, results, should_read_stop_times)
 
     gtfs.service_ids = read_gtfs_entities.service_ids(gtfs_root_dir, results)
 

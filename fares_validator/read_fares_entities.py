@@ -7,40 +7,30 @@ from .errors import *
 from .fare_leg_rule_checkers import check_areas, check_distances
 from .fare_product_checkers import check_linked_fp_entities, check_bundle, check_durations_and_offsets
 from .fare_transfer_rule_checkers import check_leg_groups, check_spans_and_transfer_ids, check_durations
-from .utils import check_fare_amount, read_csv_file, check_linked_id, check_amts, check_linked_flr_ftr_entities
+from .utils import check_fare_amount, read_csv_file, check_linked_id, check_amts, check_linked_flr_ftr_entities, check_area_cycles
 from .warnings import *
 
 
 def areas(gtfs_root_dir, messages):
-    greater_area_id_by_area_id = {}
+    greater_area_ids_by_area_id = {}
 
     for line in read_csv_file(gtfs_root_dir, schema.AREAS, messages):
-        if line.area_id in greater_area_id_by_area_id:
-            line.add_error(DUPLICATE_AREA_ID)
-            continue
-
         if not line.area_id:
             line.add_error(EMPTY_AREA_ID)
             continue
 
-        greater_area_id_by_area_id[line.area_id] = line.greater_area_id
+        greater_area_ids_by_area_id.setdefault(line.area_id, [])
 
-    for area_id in greater_area_id_by_area_id:
-        greater_area_id = greater_area_id_by_area_id[area_id]
+        if line.greater_area_id:
+            # avoid duplicate rows in areas.txt on (area_id, greater_area_id)
+            if line.greater_area_id in greater_area_ids_by_area_id[line.area_id]:
+                line.add_error(DUPLICATE_AREAS_TXT_ENTRY)
+            else:
+                greater_area_ids_by_area_id[line.area_id].append(line.greater_area_id)
 
-        while greater_area_id:
-            if greater_area_id == area_id:
-                messages.add_error(diagnostics.format(GREATER_AREA_ID_LOOP, '', '', f'area_id:  {area_id}'))
-                break
+    check_area_cycles(greater_area_ids_by_area_id, messages)
 
-            if greater_area_id not in greater_area_id_by_area_id:
-                messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
-                                                      f'greater_area_id: {greater_area_id}'))
-                break
-
-            greater_area_id = greater_area_id_by_area_id[greater_area_id]
-
-    return set(greater_area_id_by_area_id.keys())
+    return set(greater_area_ids_by_area_id.keys())
 
 
 def timeframes(gtfs_root_dir, messages):

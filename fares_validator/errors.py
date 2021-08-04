@@ -8,7 +8,6 @@ CURRENCY_WITHOUT_AMOUNT = 'A currency is defined without an amount field to acco
 FOREIGN_ID_INVALID = 'An id defined in a dependent table is referenced, but does not exist in that table.'
 INVALID_AMOUNT_FORMAT = 'An amount field is defined, but is not an integer or float.'
 MISSING_MIN_OR_MAX_AMOUNT = 'A min_ or max_amount is defined without its complement.'
-NONEXISTENT_AREA_ID = 'An area_id referenced is not defined in areas.txt.'
 NONEXISTENT_FARE_CONTAINER_ID = 'A fare_container referenced is not defined in fare_containers.txt.'
 NONEXISTENT_FARE_PRODUCT_ID = 'A fare_product referenced is not defined in fare_products.txt.'
 NONEXISTENT_RIDER_CATEGORY_ID = 'A rider_category referenced is not defined in rider_categories.txt.'
@@ -17,9 +16,9 @@ TOO_MANY_AMOUNT_DECIMALS = 'An amount field has many decimals for the currency d
 UNRECOGNIZED_CURRENCY_CODE = 'A currency code is unrecognized.'
 
 # areas.txt
-DUPLICATE_AREA_ID = 'An area_id is defined twice in areas.txt.'
+DUPLICATE_AREAS_TXT_ENTRY = 'There are two entries in areas.txt with the same area_id and greater_area_id.'
 EMPTY_AREA_ID = 'An entry in areas.txt has empty area id.'
-GREATER_AREA_ID_LOOP = 'An area_id has itself as a greater_area_id.'
+GREATER_AREA_ID_LOOP = 'Some area_ids have themselves as greater_area_ids.'
 UNDEFINED_GREATER_AREA_ID = 'A greater_area_id is not defined as an area_id in areas.txt.'
 
 # calendar.txt, calendar_dates.txt
