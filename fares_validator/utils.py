@@ -171,9 +171,10 @@ def check_area_cycles(greater_area_ids_by_area_id, messages):
     non_parent_areas = deque(greater_area_ids_by_area_id.keys())
     in_degree_by_area_id = {}
 
-    for area_id in greater_area_ids_by_area_id:
-        if greater_area_ids_by_area_id[area_id]:
-            for greater_area_id in greater_area_ids_by_area_id[area_id]:
+    for area_id, greater_areas in greater_area_ids_by_area_id.items():
+        if not greater_areas:
+             continue
+         for greater_area_id in greater_areas:
                 if greater_area_id not in greater_area_ids_by_area_id:
                     messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
                                                           f'greater_area_id: {greater_area_id}'))
