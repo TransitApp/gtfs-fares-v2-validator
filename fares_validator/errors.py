@@ -17,9 +17,15 @@ UNRECOGNIZED_CURRENCY_CODE = 'A currency code is unrecognized.'
 
 # areas.txt
 DUPLICATE_AREAS_TXT_ENTRY = 'There are two entries in areas.txt with the same area_id and greater_area_id.'
-EMPTY_AREA_ID = 'An entry in areas.txt has empty area id.'
+EMPTY_AREA_ID_AREAS = 'An entry in areas.txt has empty area_id.'
 GREATER_AREA_ID_LOOP = 'Some area_ids have themselves as greater_area_ids.'
 UNDEFINED_GREATER_AREA_ID = 'A greater_area_id is not defined as an area_id in areas.txt.'
+
+# stop_areas.txt
+EMPTY_AREA_ID_STOP_AREAS = 'An entry in stop_areas.txt has empty area_id.'
+EMPTY_STOP_ID_STOP_AREAS = 'An entry in stop_areas.txt has empty stop_id.'
+INVALID_AREA_ID = 'An entry in stop_areas.txt references a non-existent area_id.'
+INVALID_STOP_ID = 'An entry in stop_areas.txt references a non-existent stop_id.'
 
 # calendar.txt, calendar_dates.txt
 DUPLICATE_SERVICE_ID = 'A service_id is defined twice in calendar.txt.'

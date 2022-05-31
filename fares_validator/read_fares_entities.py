@@ -12,25 +12,24 @@ from .warnings import *
 
 
 def areas(gtfs_root_dir, messages):
-    greater_area_ids_by_area_id = {}
-
     for line in read_csv_file(gtfs_root_dir, schema.AREAS, messages):
         if not line.area_id:
-            line.add_error(EMPTY_AREA_ID)
+            line.add_error(EMPTY_AREA_ID_AREAS)
             continue
 
-        greater_area_ids_by_area_id.setdefault(line.area_id, [])
 
-        if line.greater_area_id:
-            # avoid duplicate rows in areas.txt on (area_id, greater_area_id)
-            if line.greater_area_id in greater_area_ids_by_area_id[line.area_id]:
-                line.add_error(DUPLICATE_AREAS_TXT_ENTRY)
-            else:
-                greater_area_ids_by_area_id[line.area_id].append(line.greater_area_id)
-
-    check_area_cycles(greater_area_ids_by_area_id, messages)
-
-    return set(greater_area_ids_by_area_id.keys())
+def stop_areas(gtfs_root_dir, messages, areas, stops):
+    for line in read_csv_file(gtfs_root_dir, schema.STOP_AREAS, messages):
+        if not line.area_id:
+            line.add_error(EMPTY_AREA_ID_STOP_AREAS)
+            continue
+        if not line.stop_id:
+            line.add_error(EMPTY_STOP_ID_STOP_AREAS)
+            continue
+        if line.area_id not in areas:
+            line.add_error(INVALID_AREA_ID)
+        if line.stop_id not in stops:
+            line.add_error(INVALID_STOP_ID)
 
 
 def timeframes(gtfs_root_dir, messages):

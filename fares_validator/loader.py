@@ -17,6 +17,10 @@ def run_validator(gtfs_root_dir, should_read_stop_times):
 
     gtfs.areas = read_fares_entities.areas(gtfs_root_dir, results)
 
+    stops = read_gtfs_entities.stops(gtfs_root_dir, results)
+
+    read_fares_entities.stop_areas(gtfs_root_dir, results, gtfs.areas, stops)
+
     gtfs.networks = read_gtfs_entities.networks(gtfs_root_dir, results)
 
     read_gtfs_entities.read_areas_in_stop_files(gtfs_root_dir, gtfs.areas, results, should_read_stop_times)
