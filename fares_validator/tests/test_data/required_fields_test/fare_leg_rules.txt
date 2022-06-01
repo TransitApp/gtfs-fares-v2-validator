@@ -1,0 +1,2 @@
+leg_group_id,fare_product_ids
+1,1

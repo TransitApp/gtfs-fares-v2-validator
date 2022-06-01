@@ -7,9 +7,9 @@ AREAS = Schema('areas.txt',
                message_if_missing=warnings.NO_AREAS)
 
 STOPS = Schema('stops.txt',
-                set(), {'stop_id'},
-                message_if_missing=warnings.NO_STOPS,
-                )
+               set(), {'stop_id'},
+               message_if_missing=warnings.NO_STOPS,
+               suppress_undefined_field_warning=True)
 
 STOP_AREAS = Schema('stop_areas.txt',
                     required_fields={'area_id', 'stop_id'},
@@ -63,17 +63,16 @@ FARE_LEG_RULES = Schema('fare_leg_rules.txt',
                         required_fields={'fare_product_id'},
                         defined_fields={
                             'leg_group_id', 'fare_leg_name', 'network_id',
-                            'from_area_id', 'contains_area_id', 'to_area_id',
-                            'is_symmetrical', 'from_timeframe_id',
+                            'from_area_id', 'to_area_id', 'from_timeframe_id',
                             'to_timeframe_id', 'min_distance', 'max_distance',
                             'distance_type', 'service_id', 'fare_product_id'
                         })
 
 FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt',
-                             required_fields=set(),
+                             required_fields={'fare_transfer_type'},
                              defined_fields={
                                  'from_leg_group_id', 'to_leg_group_id',
                                  'transfer_count', 'duration_limit',
                                  'duration_limit_type', 'fare_transfer_type',
-                                 'fare_product_id'
+                                 'fare_product_id', 'filter_fare_product_id'
                              })

@@ -1,9 +1,6 @@
 # generic errors (see utils.py)
 AMOUNT_WITH_MIN_OR_MAX_AMOUNT = 'An amount is defined alongside at least one of min_ or max_amount.'
 AMOUNT_WITHOUT_CURRENCY = 'An amount field is defined without a currency to accompany it.'
-CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT = 'A fare_container referenced conflicts with the fare_container on the fare_product.'
-CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER = 'A rider_category referenced conflicts with the rider_category on the fare_container.'
-CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT = 'A rider_category referenced conflicts with the rider_category on the fare_product.'
 CURRENCY_WITHOUT_AMOUNT = 'A currency is defined without an amount field to accompany it.'
 FOREIGN_ID_INVALID = 'An id defined in a dependent table is referenced, but does not exist in that table.'
 INVALID_AMOUNT_FORMAT = 'An amount field is defined, but is not an integer or float.'
@@ -16,16 +13,13 @@ TOO_MANY_AMOUNT_DECIMALS = 'An amount field has many decimals for the currency d
 UNRECOGNIZED_CURRENCY_CODE = 'A currency code is unrecognized.'
 
 # areas.txt
-DUPLICATE_AREAS_TXT_ENTRY = 'There are two entries in areas.txt with the same area_id and greater_area_id.'
+DUPLICATE_AREAS_TXT_ENTRY = 'There are two entries in areas.txt with the same area_id.'
 EMPTY_AREA_ID_AREAS = 'An entry in areas.txt has empty area_id.'
-GREATER_AREA_ID_LOOP = 'Some area_ids have themselves as greater_area_ids.'
-UNDEFINED_GREATER_AREA_ID = 'A greater_area_id is not defined as an area_id in areas.txt.'
 
 # stop_areas.txt
+DUPLICATE_STOP_AREAS_TXT_ENTRY = 'There are two entries in stop_areas.txt with the same area_id and stop_id.'
 EMPTY_AREA_ID_STOP_AREAS = 'An entry in stop_areas.txt has empty area_id.'
 EMPTY_STOP_ID_STOP_AREAS = 'An entry in stop_areas.txt has empty stop_id.'
-INVALID_AREA_ID = 'An entry in stop_areas.txt references a non-existent area_id.'
-INVALID_STOP_ID = 'An entry in stop_areas.txt references a non-existent stop_id.'
 
 # calendar.txt, calendar_dates.txt
 DUPLICATE_SERVICE_ID = 'A service_id is defined twice in calendar.txt.'
@@ -73,36 +67,23 @@ OFFSET_UNIT_WITHOUT_AMOUNT = 'An offset_unit in fare_products.txt is defined wit
 TIMEFRAME_TYPE_WITHOUT_TIMEFRAME = 'A timeframe_type in fare_products.txt is defined without a timeframe_id.'
 
 # fare_leg_rules.txt
-AMOUNT_WITH_FARE_PRODUCT = 'An entry in fare_leg_rules.txt has both a fare_product and an amount field defined.'
-AREA_WITHOUT_IS_SYMMETRICAL = 'A from_ and/or to_area in fare_leg_rules.txt is defined without is_symmetrical.'
-CONTAINS_AREA_WITHOUT_FROM_TO_AREA = 'A contains_area in fare_leg_rules.txt is defined without a from and to area.'
 DISTANCE_TYPE_WITHOUT_DISTANCE = 'A distance_type in fare_leg_rules.txt is defined without a min_ or max_distance.'
 DISTANCE_WITHOUT_DISTANCE_TYPE = 'A min_ or max_distance in fare_leg_rules.txt is defined without a distance_type.'
 FARE_LEG_NAME_WITH_FARE_PRODUCT = 'An entry in fare_leg_rules.txt has both a fare_product and a fare_leg_name field defined.'
 INVALID_DISTANCE_TYPE = 'A distance_type in fare_leg_rules.txt has an invalid value.'
-INVALID_IS_SYMMETRICAL_LEG_RULES = 'An is_symmetrical in fare_leg_rules.txt is not one of the accepted values.'
 INVALID_MAX_DISTANCE = 'A max_distance in fare_leg_rules.txt is not a float.'
 INVALID_MIN_DISTANCE = 'A min_distance in fare_leg_rules.txt is not a float.'
-IS_SYMMETRICAL_WITHOUT_FROM_TO_AREA = 'An is_symmetrical in fare_leg_rules.txt is defined without a from_ and/or to_area.'
 NEGATIVE_MAX_DISTANCE = 'A max_distance in fare_leg_rules.txt is negative.'
 NEGATIVE_MIN_DISTANCE = 'A min_distance in fare_leg_rules.txt is negative.'
 
 # fare_transfer_rules.txt
-AMOUNT_WITHOUT_FARE_TRANSFER_TYPE = 'An entry in fare_transfer_rules.txt has an amount field defined without fare_transfer_type.'
 DURATION_LIMIT_WITHOUT_LIMIT_TYPE = 'An entry in fare_transfer_rules.txt has duration_limit without duration_limit_type.'
 DURATION_LIMIT_TYPE_WITHOUT_DURATION = 'An entry in fare_transfer_rules.txt has duration_limit_type without duration_limit.'
-FARE_TRANSFER_TYPE_WITHOUT_AMOUNT = 'An entry in fare_transfer_rules.txt has fare_transfer_type defined without an amount field.'
 INVALID_DURATION_LIMIT = 'An entry in fare_transfer_rules.txt has duration_limit with invalid value.'
 INVALID_DURATION_LIMIT_TYPE = 'An entry in fare_transfer_rules.txt has duration_limit_type with invalid value.'
 INVALID_FARE_TRANSFER_TYPE = 'An entry in fare_transfer_rules.txt has fare_transfer_type with invalid value.'
 INVALID_FROM_LEG_GROUP = 'A from_leg_group_id in fare_transfer_rules.txt is not defined in fare_leg_rules.txt.'
-INVALID_IS_SYMMETRICAL_TRANSFER_RULES = 'An is_symmetrical in fare_transfer_rules.txt is not one of the accepted values.'
-INVALID_SPANNING_LIMIT = 'An entry in fare_transfer_rules.txt has spanning_limit with incorrect type or invalid integer value.'
+INVALID_TRANSFER_COUNT = 'An entry in fare_transfer_rules.txt has transfer_count with incorrect type or invalid integer value.'
 INVALID_TO_LEG_GROUP = 'A to_leg_group_id in fare_transfer_rules.txt is not defined in fare_leg_rules.txt.'
-INVALID_TRANSFER_SEQUENCE = 'A transfer_sequence in fare_transfer_rules.txt has incorrect type or invalid integer value.'
-IS_SYMMETRICAL_WITHOUT_FROM_TO_LEG_GROUP = 'An is_symmetrical in fare_transfer_rules.txt is defined without a from_ and/or to_leg_group_id.'
-LEG_GROUP_WITHOUT_IS_SYMMETRICAL = 'A from_ and/or to_leg_group_id in fare_transfer_rules.txt is defined without is_symmetrical.'
-SPANNING_LIMIT_WITH_BAD_LEGS = 'An entry in fare_transfer_rules.txt has spanning_limit with different from and to leg group ids.'
-SPANNING_LIMIT_WITH_TRANSFER_ID = 'An entry in fare_transfer_rules.txt has spanning_limit with transfer_id defined.'
-TRANSFER_ID_WITHOUT_TRANSFER_SEQUENCE = 'A transfer_id in fare_transfer_rules.txt is defined without a transfer_sequence.'
-TRANSFER_SEQUENCE_WITHOUT_TRANSFER_ID = 'A transfer_sequence in fare_transfer_rules.txt is defined without a transfer_id.'
+NONEXISTENT_FILTER_FARE_PRODUCT_ID = 'A filter_fare_product referenced is not defined in fare_products.txt.'
+TRANSFER_COUNT_WITH_BAD_LEGS = 'An entry in fare_transfer_rules.txt has transfer_count with different from and to leg group ids.'
