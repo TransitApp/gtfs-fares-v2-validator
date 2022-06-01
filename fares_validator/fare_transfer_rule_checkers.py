@@ -2,9 +2,9 @@ from .errors import *
 
 
 def check_leg_groups(line, leg_group_ids, unused_leg_groups):
-    if line.from_leg_group_id and not line.from_leg_group_id in leg_group_ids:
+    if line.from_leg_group_id and line.from_leg_group_id not in leg_group_ids:
         line.add_error(INVALID_FROM_LEG_GROUP)
-    if line.to_leg_group_id and not line.to_leg_group_id in leg_group_ids:
+    if line.to_leg_group_id and line.to_leg_group_id not in leg_group_ids:
         line.add_error(INVALID_TO_LEG_GROUP)
 
     if line.from_leg_group_id in unused_leg_groups:
