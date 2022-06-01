@@ -9,7 +9,7 @@ class Entities:
     pass
 
 
-def run_validator(gtfs_root_dir, should_read_stop_times):
+def run_validator(gtfs_root_dir):
     gtfs_root_dir = Path(gtfs_root_dir)
     results = diagnostics.Diagnostics()
 

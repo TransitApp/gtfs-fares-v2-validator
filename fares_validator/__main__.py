@@ -6,10 +6,6 @@ from .loader import run_validator
 
 def main():
     parser = argparse.ArgumentParser(description='Validate GTFS fares-v2 data.')
-    parser.add_argument("-s",
-                        "--read-stop-times",
-                        help="Scan stop_times for area_ids",
-                        action='store_true')
     parser.add_argument("-o",
                         "--output-file",
                         type=str,
@@ -25,8 +21,7 @@ def main():
     if not path.isdir(gtfs_path):
         raise Exception('Input path is not a valid folder.')
 
-    read_stop_times = args.read_stop_times
-    results = run_validator(gtfs_path, read_stop_times)
+    results = run_validator(gtfs_path)
     output = results.to_string()
 
     if args.output_file:
