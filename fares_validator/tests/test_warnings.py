@@ -6,7 +6,7 @@ test_data_dir = Path(__file__).parent / 'test_data'
 
 
 def test_warnings():
-    results = run_validator(test_data_dir / 'warnings_test_gtfs', True)
+    results = run_validator(test_data_dir / 'warnings_test_gtfs')
     warning_iter = results.warnings.__iter__()
 
     # Rider categories warnings
@@ -35,7 +35,7 @@ def test_warnings():
 
 
 def test_warnings_nonexistent_files():
-    results = run_validator(test_data_dir / 'no_files', True)
+    results = run_validator(test_data_dir / 'no_files')
     warning_iter = results.warnings.__iter__()
 
     assert warnings.NO_AREAS in warning_iter.__next__()

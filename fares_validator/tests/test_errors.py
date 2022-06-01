@@ -6,7 +6,7 @@ test_data_dir = Path(__file__).parent / 'test_data'
 
 
 def test_errors_simple_files():
-    results = run_validator(test_data_dir / 'bad_gtfs_simple', True)
+    results = run_validator(test_data_dir / 'bad_gtfs_simple')
     error_iter = results.errors.__iter__()
 
     # Areas errors
@@ -60,7 +60,7 @@ def test_errors_simple_files():
 
 
 def test_errors_fare_products():
-    results = run_validator(test_data_dir / 'bad_fare_products', False)
+    results = run_validator(test_data_dir / 'bad_fare_products')
     error_iter = results.errors.__iter__()
 
     assert errors.EMPTY_FARE_PRODUCT_ID in error_iter.__next__()
@@ -86,7 +86,7 @@ def test_errors_fare_products():
 
 
 def test_errors_fare_leg_rules():
-    results = run_validator(test_data_dir / 'bad_fare_leg_rules', False)
+    results = run_validator(test_data_dir / 'bad_fare_leg_rules')
     error_iter = results.errors.__iter__()
 
     # check areas
@@ -125,7 +125,7 @@ def test_errors_fare_leg_rules():
 
 
 def test_errors_fare_transfer_rules():
-    results = run_validator(test_data_dir / 'bad_fare_transfer_rules', False)
+    results = run_validator(test_data_dir / 'bad_fare_transfer_rules')
     error_iter = results.errors.__iter__()
 
     # check leg groups
@@ -157,7 +157,7 @@ def test_errors_fare_transfer_rules():
 
 
 def test_required_fields():
-    results = run_validator(test_data_dir / 'required_fields_test', False)
+    results = run_validator(test_data_dir / 'required_fields_test')
     error_iter = results.errors.__iter__()
 
     area_error = error_iter.__next__()
