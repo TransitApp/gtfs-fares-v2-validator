@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='gtfs-fares-v2-validator',
-    version='0.1.0',
+    version='1.0.0',
     description=
     'Validate transit feeds for conformance to the GTFS Fares v2 specification',
     url='https://github.com/TransitApp/gtfs-fares-v2-validator',
