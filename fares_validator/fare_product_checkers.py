@@ -3,13 +3,17 @@ from .warnings import *
 
 
 class LinkedEntities:
+
     def __init__(self):
         self.rider_category_ids = set()
         self.fare_container_ids = set()
 
 
-def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_container, linked_entities_by_fare_product):
-    linked_entities = linked_entities_by_fare_product.setdefault(line.fare_product_id, LinkedEntities())
+def check_linked_fp_entities(line, rider_categories,
+                             rider_category_by_fare_container,
+                             linked_entities_by_fare_product):
+    linked_entities = linked_entities_by_fare_product.setdefault(
+        line.fare_product_id, LinkedEntities())
 
     if line.rider_category_id:
         linked_entities.rider_category_ids.add(line.rider_category_id)
@@ -23,8 +27,10 @@ def check_linked_fp_entities(line, rider_categories, rider_category_by_fare_cont
         if line.fare_container_id not in rider_category_by_fare_container:
             line.add_error(NONEXISTENT_FARE_CONTAINER_ID)
 
-        fare_container_rider_cat = rider_category_by_fare_container.get(line.fare_container_id)
-        if line.rider_category_id and fare_container_rider_cat and (line.rider_category_id != fare_container_rider_cat):
+        fare_container_rider_cat = rider_category_by_fare_container.get(
+            line.fare_container_id)
+        if line.rider_category_id and fare_container_rider_cat and (
+                line.rider_category_id != fare_container_rider_cat):
             line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER)
     else:
         linked_entities.fare_container_ids.add('')
@@ -46,7 +52,9 @@ def check_durations_and_offsets(line):
     if line.duration_start and line.duration_start not in {'0', '1'}:
         line.add_error(INVALID_DURATION_START)
 
-    if line.duration_unit and line.duration_unit not in {'0', '1', '2', '3', '4', '5', '6'}:
+    if line.duration_unit and line.duration_unit not in {
+            '0', '1', '2', '3', '4', '5', '6'
+    }:
         line.add_error(INVALID_DURATION_UNIT)
 
     if line.duration_type and line.duration_type not in {'1', '2'}:
@@ -74,7 +82,9 @@ def check_durations_and_offsets(line):
         if line.duration_unit:
             line.add_error(DURATION_UNIT_WITHOUT_AMOUNT)
 
-    if line.offset_unit and line.offset_unit not in {'0', '1', '2', '3', '4', '5', '6'}:
+    if line.offset_unit and line.offset_unit not in {
+            '0', '1', '2', '3', '4', '5', '6'
+    }:
         line.add_error(INVALID_OFFSET_UNIT)
 
     if line.offset_amount:

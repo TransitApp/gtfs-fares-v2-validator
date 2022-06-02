@@ -1,0 +1,6 @@
+area_id,stop_id
+,1
+1,
+area_1,garbage_stop
+1,1
+area_1,garbage_stop

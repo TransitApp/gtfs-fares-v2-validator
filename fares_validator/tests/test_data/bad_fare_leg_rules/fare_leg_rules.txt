@@ -1,8 +1,4 @@
 leg_group_id,from_area_id,contains_area_id,to_area_id,is_symmetrical,network_id,from_timeframe_id,to_timeframe_id,service_id,min_distance,max_distance,distance_type,amount,min_amount,max_amount,currency,fare_product_id,fare_leg_name,rider_category_id,fare_container_id
-1,1,1,1,,,,,,,,,,,,,,,,
-1,,1,,,,,,,,,,,,,,,,,
-1,,,,1,,,,,,,,,,,,,,,
-1,1,1,1,invalid_is_symmetrical,,,,,,,,,,,,,,,
 1,1,1,invalid_area,1,,,,,,,,,,,,,,,
 1,1,1,1,1,invalid_network,,,,,,,,,,,,,,
 1,1,1,1,1,,invalid_timeframe,,,,,,,,,,,,,
@@ -11,13 +7,5 @@ leg_group_id,from_area_id,contains_area_id,to_area_id,is_symmetrical,network_id,
 1,1,1,1,1,,,,,bad_distance,bad_distance,,,,,,,,,
 1,1,1,1,1,,,,,-2,-1,invalid_distance_type,,,,,,,,
 1,1,1,1,1,,,,,,,1,,,,,,,,
-1,1,1,1,1,,,,,,,,,,,USD,,,,
-1,1,1,1,1,,,,,,,,3.00,,,USD,1,,,
-1,1,1,1,1,,,,,,,,3.00,2.00,,USD,,,,
 1,1,1,1,1,,,,,,,,,,,,1,invalid_fare_leg_name,,
 1,1,1,1,1,,,,,,,,,,,,invalid_fare_product_id,,,
-1,1,1,1,1,,,,,,,,,,,,1,,invalid_rider_category_id,
-1,1,1,1,1,,,,,,,,,,,,1,,,invalid_fare_container_id
-1,1,1,1,1,,,,,,,,,,,,2,,2,
-1,1,1,1,1,,,,,,,,,,,,2,,,2
-1,1,1,1,1,,,,,,,,,,,,1,,1,2

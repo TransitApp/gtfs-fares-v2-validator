@@ -7,12 +7,14 @@ UNUSED_TIMEFRAME_IDS = 'Timeframes defined in timeframes.txt are unused in other
 # areas.txt
 NO_AREAS = 'No areas.txt was found, will assume no areas exist.'
 
-# routes.txt
-NO_ROUTES = 'No routes.txt was found, will assume no networks exist.'
-
 # stops.txt
 NO_STOPS = 'No stops.txt was found, will assume stops.txt does not reference any areas.'
-UNUSED_AREAS_IN_STOPS = 'Areas defined in areas.txt are unused in stops.txt or stop_times.txt.'
+
+# stop_areas.txt
+NO_STOP_AREAS = 'No stop_areas.txt was found, will assume no areas are associated to stops.'
+
+# routes.txt
+NO_ROUTES = 'No routes.txt was found, will assume no networks exist.'
 
 # calendar.txt, calendar_dates.txt
 NO_SERVICE_IDS = 'Neither calendar.txt or calendar_dates.txt was found, will assume no service_ids for fares data.'

@@ -1,7 +1,7 @@
-area_id,greater_area_id
+area_id,area_name
 ,
-area_1,area_2
-area_2,area_3
-area_3,area_1
+area_1,a
+area_2,b
+area_3,c
 area_4,
-area_3,area_1
+area_3,e

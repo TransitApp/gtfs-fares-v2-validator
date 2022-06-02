@@ -1,0 +1,2 @@
+fare_transfer_types
+2

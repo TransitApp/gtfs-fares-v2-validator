@@ -13,6 +13,7 @@ def format(code, line_context='', path='', extra_info=''):
 
 
 class Diagnostics:
+
     def __init__(self):
         self.errors = []
         self.warnings = []

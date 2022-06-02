@@ -11,7 +11,11 @@ from .warnings import *
 class Schema:
     FAKE_FIELDS = {'line_num_error_msg'}
 
-    def __init__(self, basename, required_fields, defined_fields, *,
+    def __init__(self,
+                 basename,
+                 required_fields,
+                 defined_fields,
+                 *,
                  message_if_missing=None,
                  suppress_undefined_field_warning=False):
         self.basename = basename
@@ -26,6 +30,7 @@ class Schema:
 
 
 class Entity:
+
     def __init__(self, schema, messages, original_dict):
         self._schema = schema
         self._messages = messages
@@ -38,10 +43,14 @@ class Entity:
             raise TypeError(f'Reference to undefined field {item} in code!')
 
     def add_error(self, code, extra_info=''):
-        self._messages.add_error(diagnostics.format(code, self.line_num_error_msg, self._schema.basename, extra_info))
+        self._messages.add_error(
+            diagnostics.format(code, self.line_num_error_msg,
+                               self._schema.basename, extra_info))
 
     def add_warning(self, code, extra_info=''):
-        self._messages.add_warning(diagnostics.format(code, self.line_num_error_msg, self._schema.basename, extra_info))
+        self._messages.add_warning(
+            diagnostics.format(code, self.line_num_error_msg,
+                               self._schema.basename, extra_info))
 
 
 def read_csv_file(gtfs_root_dir, schema, messages):
@@ -58,7 +67,9 @@ def read_csv_file(gtfs_root_dir, schema, messages):
         for required_field in schema.required_fields:
             if required_field not in reader.fieldnames:
                 messages.add_error(
-                    diagnostics.format(REQUIRED_FIELD_MISSING, '', schema.basename, f'field:  {required_field}'))
+                    diagnostics.format(REQUIRED_FIELD_MISSING, '',
+                                       schema.basename,
+                                       f'field:  {required_field}'))
                 return []
 
         if schema.defined_fields and not schema.suppress_undefined_field_warning:
@@ -67,8 +78,9 @@ def read_csv_file(gtfs_root_dir, schema, messages):
                 if field not in schema.defined_fields:
                     unexpected_fields.append(field)
             if len(unexpected_fields):
-                messages.add_warning(diagnostics.format(UNEXPECTED_FIELDS, '', schema.basename,
-                                                        f'\nColumn(s): {unexpected_fields}'))
+                messages.add_warning(
+                    diagnostics.format(UNEXPECTED_FIELDS, '', schema.basename,
+                                       f'\nColumn(s): {unexpected_fields}'))
 
         for line in reader:
             line['line_num_error_msg'] = f'\nLine: {reader.line_num}'
@@ -104,31 +116,12 @@ def check_amts(path, line, min_amt_exists, max_amt_exists, amt_exists):
     filename = Path(path).name
     if (min_amt_exists or max_amt_exists) and amt_exists:
         line.add_error(AMOUNT_WITH_MIN_OR_MAX_AMOUNT)
-    if (min_amt_exists and not max_amt_exists) or (max_amt_exists and not min_amt_exists):
+    if (min_amt_exists and not max_amt_exists) or (max_amt_exists and
+                                                   not min_amt_exists):
         line.add_error(MISSING_MIN_OR_MAX_AMOUNT)
-    if (not amt_exists and not min_amt_exists and not max_amt_exists) and filename == 'fare_products.txt':
+    if (not amt_exists and not min_amt_exists and
+            not max_amt_exists) and filename == 'fare_products.txt':
         line.add_error(NO_AMOUNT_DEFINED)
-
-
-def read_areas_of_file(path, areas, unused_areas):
-    with open(path, 'r', encoding='utf-8-sig') as csvfile:
-        reader = csv.DictReader(csvfile, skipinitialspace=True)
-
-        # Avoid parsing huge file if areas are not in use
-        if 'area_id' not in reader.fieldnames:
-            return
-
-        for line in reader:
-            area_id = line.get('area_id')
-
-            if not area_id:
-                continue
-            
-            if area_id in unused_areas:
-                unused_areas.remove(area_id)
-
-            if area_id not in areas:
-                areas.add(area_id)
 
 
 def check_linked_id(line, fieldname, defined_ids):
@@ -136,67 +129,14 @@ def check_linked_id(line, fieldname, defined_ids):
         return False
 
     if getattr(line, fieldname) not in defined_ids:
-        line.add_error(FOREIGN_ID_INVALID, extra_info=f'{fieldname}: {getattr(line, fieldname)}')
+        line.add_error(FOREIGN_ID_INVALID,
+                       extra_info=f'{fieldname}: {getattr(line, fieldname)}')
 
     return True
 
 
-def check_linked_flr_ftr_entities(line, rider_categories, rider_category_by_fare_container,
+def check_linked_flr_ftr_entities(line, rider_categories,
+                                  rider_category_by_fare_container,
                                   linked_entities_by_fare_product):
     if line.fare_product_id and line.fare_product_id not in linked_entities_by_fare_product:
         line.add_error(NONEXISTENT_FARE_PRODUCT_ID)
-    if line.rider_category_id and line.rider_category_id not in rider_categories:
-        line.add_error(NONEXISTENT_RIDER_CATEGORY_ID)
-    if line.fare_container_id and line.fare_container_id not in rider_category_by_fare_container:
-        line.add_error(NONEXISTENT_FARE_CONTAINER_ID)
-
-    if line.fare_product_id:
-        if line.rider_category_id:
-            fp_rider_cats = linked_entities_by_fare_product[line.fare_product_id].rider_category_ids
-            if len(fp_rider_cats) and (line.rider_category_id not in fp_rider_cats) and ('' not in fp_rider_cats):
-                line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_PRODUCT)
-        if line.fare_container_id:
-            fp_fare_containers = linked_entities_by_fare_product[line.fare_product_id].fare_container_ids
-            if len(fp_fare_containers) and (line.fare_container_id not in fp_fare_containers) and ('' not in fp_fare_containers):
-                line.add_error(CONFLICTING_FARE_CONTAINER_ON_FARE_PRODUCT)
-    if line.rider_category_id and line.fare_container_id:
-        fc_rider_cat = rider_category_by_fare_container[line.fare_container_id]
-        if fc_rider_cat and (fc_rider_cat != line.rider_category_id):
-            line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER)
-
-
-# This uses an adapted version of Kahn's algorithm
-# https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
-def check_area_cycles(greater_area_ids_by_area_id, messages):
-    non_parent_areas = deque(greater_area_ids_by_area_id.keys())
-    in_degree_by_area_id = Counter()
-
-    for area_id, greater_areas in greater_area_ids_by_area_id.items():
-        if not greater_areas:
-            continue
-        for greater_area_id in greater_areas:
-            if greater_area_id not in greater_area_ids_by_area_id:
-                messages.add_error(diagnostics.format(UNDEFINED_GREATER_AREA_ID, '', '',
-                                                        f'greater_area_id: {greater_area_id}'))
-                return
-            in_degree_by_area_id[greater_area_id] += 1
-            if greater_area_id in non_parent_areas:
-                non_parent_areas.remove(greater_area_id)
-    
-    sorted_area_ids = []
-    while len(non_parent_areas) > 0:
-        area_id = non_parent_areas.popleft()
-        sorted_area_ids.append(area_id)
-        for greater_area_id in greater_area_ids_by_area_id[area_id]:
-            in_degree_by_area_id[greater_area_id] -= 1
-            if in_degree_by_area_id[greater_area_id] == 0:
-                non_parent_areas.append(greater_area_id)
-
-    nonzero_in_degree_area_ids = []
-    for area_id in in_degree_by_area_id:
-        if in_degree_by_area_id[area_id] > 0:
-            nonzero_in_degree_area_ids.append(area_id)
-
-    if len(nonzero_in_degree_area_ids) > 0:
-        messages.add_error(diagnostics.format(GREATER_AREA_ID_LOOP, '', '',
-                                              f'area_ids: {str(nonzero_in_degree_area_ids)}'))

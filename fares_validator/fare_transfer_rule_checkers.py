@@ -2,15 +2,9 @@ from .errors import *
 
 
 def check_leg_groups(line, leg_group_ids, unused_leg_groups):
-    if line.is_symmetrical and line.is_symmetrical not in {'0', '1'}:
-        line.add_error(INVALID_IS_SYMMETRICAL_TRANSFER_RULES)
-    if (line.from_leg_group_id or line.to_leg_group_id) and not line.is_symmetrical:
-        line.add_error(LEG_GROUP_WITHOUT_IS_SYMMETRICAL)
-    if (not line.from_leg_group_id and not line.to_leg_group_id) and line.is_symmetrical:
-        line.add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_LEG_GROUP)
-    if line.from_leg_group_id and not line.from_leg_group_id in leg_group_ids:
+    if line.from_leg_group_id and line.from_leg_group_id not in leg_group_ids:
         line.add_error(INVALID_FROM_LEG_GROUP)
-    if line.to_leg_group_id and not line.to_leg_group_id in leg_group_ids:
+    if line.to_leg_group_id and line.to_leg_group_id not in leg_group_ids:
         line.add_error(INVALID_TO_LEG_GROUP)
 
     if line.from_leg_group_id in unused_leg_groups:
@@ -19,36 +13,22 @@ def check_leg_groups(line, leg_group_ids, unused_leg_groups):
         unused_leg_groups.remove(line.to_leg_group_id)
 
 
-def check_spans_and_transfer_ids(line):
-    if line.spanning_limit:
+def check_transfer_count(line):
+    if line.transfer_count:
         if line.from_leg_group_id != line.to_leg_group_id:
-            line.add_error(SPANNING_LIMIT_WITH_BAD_LEGS)
-        if line.transfer_id:
-            line.add_error(SPANNING_LIMIT_WITH_TRANSFER_ID)
+            line.add_error(TRANSFER_COUNT_WITH_BAD_LEGS)
         try:
-            limit = int(line.spanning_limit)
-            if limit <= 1:
-                line.add_error(INVALID_SPANNING_LIMIT)
+            limit = int(line.transfer_count)
+            if limit < 1 and limit != -1:
+                line.add_error(INVALID_TRANSFER_COUNT)
         except ValueError:
-            line.add_error(INVALID_SPANNING_LIMIT)
-
-    if line.transfer_id:
-        if not line.transfer_sequence:
-            line.add_error(TRANSFER_ID_WITHOUT_TRANSFER_SEQUENCE)
-
-    if line.transfer_sequence:
-        if not line.transfer_id:
-            line.add_error(TRANSFER_SEQUENCE_WITHOUT_TRANSFER_ID)
-        try:
-            seq = int(line.transfer_sequence)
-            if seq < 1:
-                line.add_error(INVALID_TRANSFER_SEQUENCE)
-        except ValueError:
-            line.add_error(INVALID_TRANSFER_SEQUENCE)
+            line.add_error(INVALID_TRANSFER_COUNT)
 
 
 def check_durations(line):
-    if line.duration_limit_type and line.duration_limit_type not in {'0', '1', '2', '3'}:
+    if line.duration_limit_type and line.duration_limit_type not in {
+            '0', '1', '2', '3'
+    }:
         line.add_error(INVALID_DURATION_LIMIT_TYPE)
 
     if line.duration_limit:

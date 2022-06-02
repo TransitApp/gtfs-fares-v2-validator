@@ -3,18 +3,6 @@ from .errors import *
 
 
 def check_areas(line, areas, unused_areas):
-    if line.is_symmetrical and line.is_symmetrical not in {'0', '1'}:
-        line.add_error(INVALID_IS_SYMMETRICAL_LEG_RULES)
-
-    if line.contains_area_id and (not line.from_area_id and not line.to_area_id):
-        line.add_error(CONTAINS_AREA_WITHOUT_FROM_TO_AREA)
-
-    if (line.from_area_id or line.to_area_id) and not line.is_symmetrical:
-        line.add_error(AREA_WITHOUT_IS_SYMMETRICAL)
-
-    if (not line.from_area_id and not line.to_area_id) and line.is_symmetrical:
-        line.add_error(IS_SYMMETRICAL_WITHOUT_FROM_TO_AREA)
-
     if line.from_area_id and line.from_area_id in unused_areas:
         unused_areas.remove(line.from_area_id)
     if line.to_area_id and line.to_area_id in unused_areas:
@@ -22,7 +10,6 @@ def check_areas(line, areas, unused_areas):
 
     utils.check_linked_id(line, 'from_area_id', areas)
     utils.check_linked_id(line, 'to_area_id', areas)
-    utils.check_linked_id(line, 'contains_area_id', areas)
 
 
 def check_distances(line):
