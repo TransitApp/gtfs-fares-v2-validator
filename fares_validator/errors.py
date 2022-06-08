@@ -7,6 +7,7 @@ INVALID_AMOUNT_FORMAT = 'An amount field is defined, but is not an integer or fl
 MISSING_MIN_OR_MAX_AMOUNT = 'A min_ or max_amount is defined without its complement.'
 NONEXISTENT_FARE_CONTAINER_ID = 'A fare_container referenced is not defined in fare_containers.txt.'
 NONEXISTENT_FARE_PRODUCT_ID = 'A fare_product referenced is not defined in fare_products.txt.'
+CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER = 'A rider_category referenced conflicts with the rider_category on the referenced fare_container.'
 NONEXISTENT_RIDER_CATEGORY_ID = 'A rider_category referenced is not defined in rider_categories.txt.'
 REQUIRED_FIELD_MISSING = 'A required field is missing from the header.'
 TOO_MANY_AMOUNT_DECIMALS = 'An amount field has many decimals for the currency defined.'
@@ -57,14 +58,12 @@ INVALID_DURATION_START = 'A duration_start in fare_products.txt is not one of th
 INVALID_DURATION_TYPE = 'A duration_type in fare_products.txt is not one of the accepted values.'
 INVALID_DURATION_UNIT = 'A duration_unit in fare_products.txt is not one of the accepted values.'
 INVALID_OFFSET_UNIT = 'A offset_unit in fare_products.txt is not one of the accepted values.'
-INVALID_TIMEFRAME_TYPE = 'A timeframe_type in fare_products.txt has an invalid value, or is required and does not exist.'
 NEGATIVE_OR_ZERO_DURATION = 'A duration_amount in fare_products.txt is 0 or negative.'
 NO_AMOUNT_DEFINED = 'An entry in fare_products.txt does not have any amount, min_amount, or max_amount.'
 NON_INT_DURATION_AMOUNT = 'A duration_amount in fare_products.txt is not an integer.'
 NON_INT_OFFSET_AMOUNT = 'An offset_amount in fare_products.txt is not an integer.'
 OFFSET_AMOUNT_WITH_DURATION_TYPE = 'An offset_amount in fare_products.txt is defined for duration_type=2.'
 OFFSET_UNIT_WITHOUT_AMOUNT = 'An offset_unit in fare_products.txt is defined without an offset_amount.'
-TIMEFRAME_TYPE_WITHOUT_TIMEFRAME = 'A timeframe_type in fare_products.txt is defined without a timeframe_id.'
 
 # fare_leg_rules.txt
 DISTANCE_TYPE_WITHOUT_DISTANCE = 'A distance_type in fare_leg_rules.txt is defined without a min_ or max_distance.'

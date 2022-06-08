@@ -18,20 +18,20 @@ def check_linked_fp_entities(line, rider_categories,
     if line.rider_category_id:
         linked_entities.rider_category_ids.add(line.rider_category_id)
         if line.rider_category_id not in rider_categories:
-            line.add_error(NONEXISTENT_RIDER_CATEGORY_ID)
+            line.add_error(NONEXISTENT_RIDER_CATEGORY_ID, True)
     else:
         linked_entities.rider_category_ids.add('')
 
     if line.fare_container_id:
         linked_entities.fare_container_ids.add(line.fare_container_id)
         if line.fare_container_id not in rider_category_by_fare_container:
-            line.add_error(NONEXISTENT_FARE_CONTAINER_ID)
+            line.add_error(NONEXISTENT_FARE_CONTAINER_ID, True)
 
         fare_container_rider_cat = rider_category_by_fare_container.get(
             line.fare_container_id)
         if line.rider_category_id and fare_container_rider_cat and (
                 line.rider_category_id != fare_container_rider_cat):
-            line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER)
+            line.add_error(CONFLICTING_RIDER_CATEGORY_ON_FARE_CONTAINER, True)
     else:
         linked_entities.fare_container_ids.add('')
 
@@ -43,61 +43,61 @@ def check_bundle(line):
         try:
             bundle_amt = int(line.bundle_amount)
             if bundle_amt < 0:
-                line.add_error(INVALID_BUNDLE_AMOUNT)
+                line.add_error(INVALID_BUNDLE_AMOUNT, True)
         except ValueError:
-            line.add_error(INVALID_BUNDLE_AMOUNT)
+            line.add_error(INVALID_BUNDLE_AMOUNT, True)
 
 
 def check_durations_and_offsets(line):
     if line.duration_start and line.duration_start not in {'0', '1'}:
-        line.add_error(INVALID_DURATION_START)
+        line.add_error(INVALID_DURATION_START, True)
 
     if line.duration_unit and line.duration_unit not in {
             '0', '1', '2', '3', '4', '5', '6'
     }:
-        line.add_error(INVALID_DURATION_UNIT)
+        line.add_error(INVALID_DURATION_UNIT, True)
 
     if line.duration_type and line.duration_type not in {'1', '2'}:
-        line.add_error(INVALID_DURATION_TYPE)
+        line.add_error(INVALID_DURATION_TYPE, True)
 
     if line.duration_type == '1' and line.duration_start:
-        line.add_error(DURATION_START_WITH_DURATION_TYPE)
+        line.add_error(DURATION_START_WITH_DURATION_TYPE, True)
 
     if line.duration_amount:
         try:
             amt = int(line.duration_amount)
             if amt < 1:
-                line.add_error(NEGATIVE_OR_ZERO_DURATION)
+                line.add_error(NEGATIVE_OR_ZERO_DURATION, True)
         except ValueError:
-            line.add_error(NON_INT_DURATION_AMOUNT)
+            line.add_error(NON_INT_DURATION_AMOUNT, True)
 
         if not line.duration_unit:
-            line.add_error(DURATION_WITHOUT_UNIT)
+            line.add_error(DURATION_WITHOUT_UNIT, True)
 
         if not line.duration_type:
-            line.add_error(DURATION_WITHOUT_TYPE)
+            line.add_error(DURATION_WITHOUT_TYPE, True)
     else:
         if line.duration_type:
-            line.add_error(DURATION_TYPE_WITHOUT_AMOUNT)
+            line.add_error(DURATION_TYPE_WITHOUT_AMOUNT, True)
         if line.duration_unit:
-            line.add_error(DURATION_UNIT_WITHOUT_AMOUNT)
+            line.add_error(DURATION_UNIT_WITHOUT_AMOUNT, True)
 
     if line.offset_unit and line.offset_unit not in {
             '0', '1', '2', '3', '4', '5', '6'
     }:
-        line.add_error(INVALID_OFFSET_UNIT)
+        line.add_error(INVALID_OFFSET_UNIT, True)
 
     if line.offset_amount:
         try:
             amt = int(line.offset_amount)
         except ValueError:
-            line.add_error(NON_INT_OFFSET_AMOUNT)
+            line.add_error(NON_INT_OFFSET_AMOUNT, True)
 
         if line.duration_type == '2':
-            line.add_error(OFFSET_AMOUNT_WITH_DURATION_TYPE)
+            line.add_error(OFFSET_AMOUNT_WITH_DURATION_TYPE, True)
 
         if not line.offset_unit:
-            line.add_warning(OFFSET_AMOUNT_WITHOUT_OFFSET_UNIT)
+            line.add_warning(OFFSET_AMOUNT_WITHOUT_OFFSET_UNIT, True)
     else:
         if line.offset_unit:
-            line.add_error(OFFSET_UNIT_WITHOUT_AMOUNT)
+            line.add_error(OFFSET_UNIT_WITHOUT_AMOUNT, True)

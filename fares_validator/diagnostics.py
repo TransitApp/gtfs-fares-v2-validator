@@ -18,11 +18,17 @@ class Diagnostics:
         self.errors = []
         self.warnings = []
 
-    def add_warning(self, message):
-        self.warnings.append(message)
+    def add_warning(self, message, experimental=False):
+        out_message = message
+        if experimental:
+            out_message = '[Experimental]\n' + message
+        self.warnings.append(out_message)
 
-    def add_error(self, message):
-        self.errors.append(message)
+    def add_error(self, message, experimental=False):
+        out_message = message
+        if experimental:
+            out_message = '[Experimental]\n' + message
+        self.errors.append(out_message)
 
     def to_string(self):
         output = ''

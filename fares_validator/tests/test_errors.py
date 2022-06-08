@@ -6,7 +6,7 @@ test_data_dir = Path(__file__).parent / 'test_data'
 
 
 def test_errors_simple_files():
-    results = run_validator(test_data_dir / 'bad_gtfs_simple')
+    results = run_validator(test_data_dir / 'bad_gtfs_simple', True)
     error_iter = results.errors.__iter__()
 
     # Areas errors
@@ -60,7 +60,7 @@ def test_errors_simple_files():
 
 
 def test_errors_fare_products():
-    results = run_validator(test_data_dir / 'bad_fare_products')
+    results = run_validator(test_data_dir / 'bad_fare_products', True)
     error_iter = results.errors.__iter__()
 
     assert errors.EMPTY_FARE_PRODUCT_ID in error_iter.__next__()
@@ -72,11 +72,6 @@ def test_errors_fare_products():
     assert errors.AMOUNT_WITHOUT_CURRENCY in error_iter.__next__(
     )  # this also is for line 7 of fare products
     assert errors.NO_AMOUNT_DEFINED in error_iter.__next__()
-    assert errors.FOREIGN_ID_INVALID in error_iter.__next__()
-    assert errors.INVALID_TIMEFRAME_TYPE in error_iter.__next__()
-    assert errors.INVALID_TIMEFRAME_TYPE in error_iter.__next__()
-    assert errors.FOREIGN_ID_INVALID in error_iter.__next__()
-    assert errors.TIMEFRAME_TYPE_WITHOUT_TIMEFRAME in error_iter.__next__()
 
     try:
         should_not_exist = error_iter.__next__()
@@ -86,7 +81,7 @@ def test_errors_fare_products():
 
 
 def test_errors_fare_leg_rules():
-    results = run_validator(test_data_dir / 'bad_fare_leg_rules')
+    results = run_validator(test_data_dir / 'bad_fare_leg_rules', True)
     error_iter = results.errors.__iter__()
 
     # check areas
@@ -125,7 +120,7 @@ def test_errors_fare_leg_rules():
 
 
 def test_errors_fare_transfer_rules():
-    results = run_validator(test_data_dir / 'bad_fare_transfer_rules')
+    results = run_validator(test_data_dir / 'bad_fare_transfer_rules', True)
     error_iter = results.errors.__iter__()
 
     # check leg groups
@@ -157,7 +152,7 @@ def test_errors_fare_transfer_rules():
 
 
 def test_required_fields():
-    results = run_validator(test_data_dir / 'required_fields_test')
+    results = run_validator(test_data_dir / 'required_fields_test', True)
     error_iter = results.errors.__iter__()
 
     area_error = error_iter.__next__()

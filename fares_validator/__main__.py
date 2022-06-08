@@ -14,6 +14,10 @@ def main():
         "input_gtfs_folder",
         type=str,
         help="Path to unzipped folder containing the Fares-v2 GTFS")
+    parser.add_argument("-e",
+                        "--experimental",
+                        action="store_true",
+                        help="Validate unofficial experimental files and fields")
 
     args = parser.parse_args()
 
@@ -21,7 +25,7 @@ def main():
     if not path.isdir(gtfs_path):
         raise Exception('Input path is not a valid folder.')
 
-    results = run_validator(gtfs_path)
+    results = run_validator(gtfs_path, args.experimental)
     output = results.to_string()
 
     if args.output_file:
