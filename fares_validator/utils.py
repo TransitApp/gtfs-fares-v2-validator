@@ -66,9 +66,11 @@ def read_csv_file(gtfs_root_dir, schema, messages, read_experimental=False):
     if not path.exists():
         if not schema.experimental or read_experimental:
             if schema.message_if_missing and not schema.experimental:
-                messages.add_warning(diagnostics.format(schema.message_if_missing))
+                messages.add_warning(
+                    diagnostics.format(schema.message_if_missing))
             elif schema.message_if_missing:
-                messages.add_warning(diagnostics.format(schema.message_if_missing), True)
+                messages.add_warning(
+                    diagnostics.format(schema.message_if_missing), True)
         return []
 
     with open(path, 'r', encoding='utf-8-sig') as csvfile:
@@ -79,13 +81,13 @@ def read_csv_file(gtfs_root_dir, schema, messages, read_experimental=False):
                 if schema.experimental and read_experimental:
                     messages.add_error(
                         diagnostics.format(REQUIRED_FIELD_MISSING, '',
-                                        schema.basename,
-                                        f'field:  {required_field}'), True)
+                                           schema.basename,
+                                           f'field:  {required_field}'), True)
                 else:
                     messages.add_error(
                         diagnostics.format(REQUIRED_FIELD_MISSING, '',
-                                        schema.basename,
-                                        f'field:  {required_field}'))
+                                           schema.basename,
+                                           f'field:  {required_field}'))
                 return []
 
         if schema.defined_fields and not schema.suppress_undefined_field_warning:
@@ -148,7 +150,8 @@ def check_linked_id(line, fieldname, defined_ids, experimental=False):
         return False
 
     if getattr(line, fieldname) not in defined_ids:
-        line.add_error(FOREIGN_ID_INVALID, experimental,
+        line.add_error(FOREIGN_ID_INVALID,
+                       experimental,
                        extra_info=f'{fieldname}: {getattr(line, fieldname)}')
 
     return True

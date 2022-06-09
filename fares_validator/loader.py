@@ -27,7 +27,8 @@ def run_validator(gtfs_root_dir, experimental=True):
 
     unused_timeframes = set()
     if (experimental):
-        gtfs.timeframe_ids = read_fares_entities.timeframes(gtfs_root_dir, results)
+        gtfs.timeframe_ids = read_fares_entities.timeframes(
+            gtfs_root_dir, results)
         unused_timeframes = gtfs.timeframe_ids.copy()
 
     if (experimental):
@@ -44,7 +45,8 @@ def run_validator(gtfs_root_dir, experimental=True):
     gtfs.leg_group_ids = read_fares_entities.fare_leg_rules(
         gtfs_root_dir, gtfs, unused_timeframes, results, experimental)
 
-    read_fares_entities.fare_transfer_rules(gtfs_root_dir, gtfs, results, experimental)
+    read_fares_entities.fare_transfer_rules(gtfs_root_dir, gtfs, results,
+                                            experimental)
 
     if len(unused_timeframes):
         warning_info = 'Unused timeframes: ' + str(unused_timeframes)

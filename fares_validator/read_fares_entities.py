@@ -81,7 +81,8 @@ def timeframes(gtfs_root_dir, messages):
 
 def rider_categories(gtfs_root_dir, messages):
     rider_categories = set()
-    for line in read_csv_file(gtfs_root_dir, schema.RIDER_CATEGORIES, messages, True):
+    for line in read_csv_file(gtfs_root_dir, schema.RIDER_CATEGORIES, messages,
+                              True):
         min_age_int = 0
         if not line.rider_category_id:
             line.add_error(EMPTY_RIDER_CATEGORY_ID, True)
@@ -117,7 +118,8 @@ def rider_categories(gtfs_root_dir, messages):
 def fare_containers(gtfs_root_dir, rider_categories, messages):
     rider_category_by_fare_container = {}
 
-    for line in read_csv_file(gtfs_root_dir, schema.FARE_CONTAINERS, messages, True):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_CONTAINERS, messages,
+                              True):
         if not line.fare_container_id:
             line.add_error(EMPTY_FARE_CONTAINER_ID, True)
             continue
@@ -152,7 +154,8 @@ def fare_products(gtfs_root_dir, gtfs, messages, experimental):
 
     fare_products_path = gtfs_root_dir / 'fare_products.txt'
 
-    for line in read_csv_file(gtfs_root_dir, schema.FARE_PRODUCTS, messages, experimental):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_PRODUCTS, messages,
+                              experimental):
         if not line.fare_product_id:
             line.add_error(EMPTY_FARE_PRODUCT_ID)
             continue
@@ -162,11 +165,12 @@ def fare_products(gtfs_root_dir, gtfs, messages, experimental):
 
         min_amt_exists = False
         max_amt_exists = False
-        linked_entities_by_fare_product.setdefault(line.fare_product_id, LinkedEntities())
+        linked_entities_by_fare_product.setdefault(line.fare_product_id,
+                                                   LinkedEntities())
         if experimental:
             check_linked_fp_entities(line, gtfs.rider_category_ids,
-                                    gtfs.rider_category_by_fare_container,
-                                    linked_entities_by_fare_product)
+                                     gtfs.rider_category_by_fare_container,
+                                     linked_entities_by_fare_product)
 
             min_amt_exists = check_fare_amount(line, 'min_amount', 'currency')
             max_amt_exists = check_fare_amount(line, 'max_amount', 'currency')
@@ -185,7 +189,8 @@ def fare_products(gtfs_root_dir, gtfs, messages, experimental):
     return linked_entities_by_fare_product
 
 
-def fare_leg_rules(gtfs_root_dir, gtfs, unused_timeframes, messages, experimental):
+def fare_leg_rules(gtfs_root_dir, gtfs, unused_timeframes, messages,
+                   experimental):
     leg_group_ids = set()
 
     unused_areas = gtfs.areas.copy()
@@ -195,7 +200,8 @@ def fare_leg_rules(gtfs_root_dir, gtfs, unused_timeframes, messages, experimenta
     if not fare_leg_rules_path.exists():
         messages.add_warning(diagnostics.format(NO_FARE_LEG_RULES, ''))
 
-    for line in read_csv_file(gtfs_root_dir, schema.FARE_LEG_RULES, messages, experimental):
+    for line in read_csv_file(gtfs_root_dir, schema.FARE_LEG_RULES, messages,
+                              experimental):
         if line.leg_group_id:
             leg_group_ids.add(line.leg_group_id)
 

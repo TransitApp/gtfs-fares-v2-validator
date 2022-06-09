@@ -50,29 +50,31 @@ FARE_CONTAINERS = Schema(
     experimental=True,
     message_if_missing=warnings.NO_FARE_CONTAINERS)
 
-FARE_PRODUCTS = Schema(
-    'fare_products.txt',
-    required_fields={'fare_product_id', 'fare_product_name'},
-    defined_fields={
-        'fare_product_id', 'fare_product_name', 'amount', 'currency'
-    },
-    experimental_fields={
-        'min_amount', 'max_amount', 'bundle_amount', 'duration_start',
-        'duration_amount', 'duration_unit', 'duration_type', 'offset_amount',
-        'offset_unit', 'fare_container_id', 'rider_category_id'
-    },
-    message_if_missing=warnings.NO_FARE_PRODUCTS)
+FARE_PRODUCTS = Schema('fare_products.txt',
+                       required_fields={'fare_product_id', 'fare_product_name'},
+                       defined_fields={
+                           'fare_product_id', 'fare_product_name', 'amount',
+                           'currency'
+                       },
+                       experimental_fields={
+                           'min_amount', 'max_amount', 'bundle_amount',
+                           'duration_start', 'duration_amount', 'duration_unit',
+                           'duration_type', 'offset_amount', 'offset_unit',
+                           'fare_container_id', 'rider_category_id'
+                       },
+                       message_if_missing=warnings.NO_FARE_PRODUCTS)
 
 FARE_LEG_RULES = Schema('fare_leg_rules.txt',
                         required_fields={'fare_product_id'},
                         defined_fields={
-                            'leg_group_id', 'network_id',
-                            'from_area_id', 'to_area_id',  'fare_product_id'
+                            'leg_group_id', 'network_id', 'from_area_id',
+                            'to_area_id', 'fare_product_id'
                         },
-                        experimental_fields={'from_timeframe_id',
-                            'to_timeframe_id', 'min_distance', 'max_distance',
-                            'distance_type', 'service_id', 'fare_leg_name',
-                            'transfer_only'})
+                        experimental_fields={
+                            'from_timeframe_id', 'to_timeframe_id',
+                            'min_distance', 'max_distance', 'distance_type',
+                            'service_id', 'fare_leg_name', 'transfer_only'
+                        })
 
 FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt',
                              required_fields={'fare_transfer_type'},
@@ -82,4 +84,4 @@ FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt',
                                  'duration_limit_type', 'fare_transfer_type',
                                  'fare_product_id'
                              },
-                             experimental_fields={ 'filter_fare_product_id'})
+                             experimental_fields={'filter_fare_product_id'})

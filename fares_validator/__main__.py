@@ -14,10 +14,11 @@ def main():
         "input_gtfs_folder",
         type=str,
         help="Path to unzipped folder containing the Fares-v2 GTFS")
-    parser.add_argument("-e",
-                        "--experimental",
-                        action="store_true",
-                        help="Validate unofficial experimental files and fields")
+    parser.add_argument(
+        "-e",
+        "--experimental",
+        action="store_true",
+        help="Validate unofficial experimental files and fields")
 
     args = parser.parse_args()
 
