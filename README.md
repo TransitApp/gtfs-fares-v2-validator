@@ -33,8 +33,14 @@ pytest
 
 - `fare_capping.txt`: unsupported file. All `fare_capping` references in other files are also unsupported.
 - `fare_products.txt`: `service_id`, all `timeframe` fields
+- `fare_transfer_rules.txt`: `transfer_id`, `transfer_sequence`
+
+## Discontinued experimental fields
+
 - `fare_leg_rules.txt`: `contains_area_id`, all `amount` fields, `currency`
-- `fare_transfer_rules.txt`: all `amount` fields, `currency`, `transfer_id`, `transfer_sequence`
+- `fare_transfer_rules.txt`: all `amount` fields, `currency`,
+
+Amount and currency on these two files have been replaced by the usage of fare products to specify cost.
 
 ## Additional experimental fields
 
