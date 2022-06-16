@@ -74,6 +74,10 @@ FARE_LEG_RULES = Schema('fare_leg_rules.txt',
                             'from_timeframe_id', 'to_timeframe_id',
                             'min_distance', 'max_distance', 'distance_type',
                             'service_id', 'fare_leg_name', 'transfer_only'
+                        },
+                        outdated_fields={
+                            'amount', 'currency', 'min_amount', 'max_amount',
+                            'rider_category_id', 'fare_container_id'
                         })
 
 FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt',
@@ -84,4 +88,9 @@ FARE_TRANSFER_RULES = Schema('fare_transfer_rules.txt',
                                  'duration_limit_type', 'fare_transfer_type',
                                  'fare_product_id'
                              },
-                             experimental_fields={'filter_fare_product_id'})
+                             experimental_fields={'filter_fare_product_id'},
+                             outdated_fields={
+                                 'amount', 'currency', 'min_amount',
+                                 'max_amount', 'rider_category_id',
+                                 'fare_container_id'
+                             })

@@ -1,5 +1,6 @@
 # generic warnings
 UNEXPECTED_FIELDS = 'A GTFS fares-v2 file has column name(s) not defined in the specification.'
+OUTDATED_FIELDS = 'A GTFS fares-v2 file has column name(s) that are outdated and might indicate an invalid dataset.'
 UNUSED_AREA_IDS = 'Areas defined in areas.txt are unused in other fares files.'
 UNUSED_NETWORK_IDS = 'Networks defined in routes.txt are unused in other fares files.'
 UNUSED_TIMEFRAME_IDS = 'Timeframes defined in timeframes.txt are unused in other fares files.'
@@ -41,3 +42,4 @@ NO_FARE_LEG_RULES = 'No fare_leg_rules.txt was found, will assume no fare_leg_ru
 # fare_transfer_rules.txt
 NO_FARE_TRANSFER_RULES = 'No fare_transfer_rules.txt was found, will assume no fare_transfer_rules exist.'
 UNUSED_LEG_GROUPS = 'Leg groups defined in fare_leg_rules.txt are unused in fare_transfer_rules.txt.'
+TRANSFER_COUNT_WITH_EMPTY_LEGS = 'An entry in fare_transfer_rules.txt has transfer_count with empty from and to leg group ids. This may create undefined behaviour.'

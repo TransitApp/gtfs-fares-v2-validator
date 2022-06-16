@@ -17,6 +17,7 @@ class Schema:
                  defined_fields,
                  *,
                  experimental_fields=set(),
+                 outdated_fields=set(),
                  experimental=False,
                  message_if_missing=None,
                  suppress_undefined_field_warning=False):
@@ -24,6 +25,7 @@ class Schema:
         self.required_fields = required_fields
         self.defined_fields = defined_fields
         self.experimental_fields = experimental_fields
+        self.outdated_fields = outdated_fields
         self.experimental = experimental
         self.valid_fields = self.defined_fields | self.required_fields | self.experimental_fields | Schema.FAKE_FIELDS
         self.message_if_missing = message_if_missing
@@ -92,12 +94,19 @@ def read_csv_file(gtfs_root_dir, schema, messages, read_experimental=False):
 
         if schema.defined_fields and not schema.suppress_undefined_field_warning:
             unexpected_fields = []
+            outdated_fields = []
             for field in reader.fieldnames:
                 if field not in schema.defined_fields:
-                    if field not in schema.experimental_fields:
+                    if field in schema.outdated_fields:
+                        outdated_fields.append(field)
+                    elif field not in schema.experimental_fields:
                         unexpected_fields.append(field)
                     elif field in schema.experimental_fields and not read_experimental:
                         unexpected_fields.append(field)
+            if len(outdated_fields):
+                messages.add_warning(
+                    diagnostics.format(OUTDATED_FIELDS, '', schema.basename,
+                                       f'\nColumn(s): {outdated_fields}'))
             if len(unexpected_fields):
                 messages.add_warning(
                     diagnostics.format(UNEXPECTED_FIELDS, '', schema.basename,
