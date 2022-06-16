@@ -1,4 +1,5 @@
 from .errors import *
+from .warnings import *
 
 
 def check_leg_groups(line, leg_group_ids, unused_leg_groups):
@@ -15,6 +16,8 @@ def check_leg_groups(line, leg_group_ids, unused_leg_groups):
 
 def check_transfer_count(line):
     if line.transfer_count:
+        if not line.from_leg_group_id and not line.to_leg_group_id:
+            line.add_warning(TRANSFER_COUNT_WITH_EMPTY_LEGS)
         if line.from_leg_group_id != line.to_leg_group_id:
             line.add_error(TRANSFER_COUNT_WITH_BAD_LEGS)
         try:

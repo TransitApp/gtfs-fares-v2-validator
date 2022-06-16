@@ -98,6 +98,18 @@ def read_csv_file(gtfs_root_dir, schema, messages, read_experimental=False):
                         unexpected_fields.append(field)
                     elif field in schema.experimental_fields and not read_experimental:
                         unexpected_fields.append(field)
+            if 'rider_category_id' in unexpected_fields:
+                if schema.basename == 'fare_leg_rules.txt':
+                    messages.add_warning(RIDER_CATEGORY_IN_LEG_RULES)
+                if schema.basename == 'fare_transfer_rules.txt':
+                    messages.add_warning(RIDER_CATEGORY_IN_TRANSFER_RULES)
+                unexpected_fields.remove('rider_category_id')
+            if 'fare_container_id' in unexpected_fields:
+                if schema.basename == 'fare_leg_rules.txt':
+                    messages.add_warning(FARE_CONTAINER_IN_LEG_RULES)
+                if schema.basename == 'fare_transfer_rules.txt':
+                    messages.add_warning(FARE_CONTAINER_IN_TRANSFER_RULES)
+                unexpected_fields.remove('fare_container_id')
             if len(unexpected_fields):
                 messages.add_warning(
                     diagnostics.format(UNEXPECTED_FIELDS, '', schema.basename,

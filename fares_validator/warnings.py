@@ -3,6 +3,10 @@ UNEXPECTED_FIELDS = 'A GTFS fares-v2 file has column name(s) not defined in the 
 UNUSED_AREA_IDS = 'Areas defined in areas.txt are unused in other fares files.'
 UNUSED_NETWORK_IDS = 'Networks defined in routes.txt are unused in other fares files.'
 UNUSED_TIMEFRAME_IDS = 'Timeframes defined in timeframes.txt are unused in other fares files.'
+RIDER_CATEGORY_IN_LEG_RULES = 'rider_category_id is no longer a valid field on fare_leg_rules. The fares data may be out-of-date.'
+RIDER_CATEGORY_IN_TRANSFER_RULES = 'rider_category_id is no longer a valid field on fare_transfer_rules. The fares data may be out-of-date.'
+FARE_CONTAINER_IN_LEG_RULES = 'fare_container_id is no longer a valid field on fare_leg_rules. The fares data may be out-of-date.'
+FARE_CONTAINER_IN_TRANSFER_RULES = 'fare_container_id is no longer a valid field on fare_transfer_rules. The fares data may be out-of-date.'
 
 # areas.txt
 NO_AREAS = 'No areas.txt was found, will assume no areas exist.'
@@ -41,3 +45,4 @@ NO_FARE_LEG_RULES = 'No fare_leg_rules.txt was found, will assume no fare_leg_ru
 # fare_transfer_rules.txt
 NO_FARE_TRANSFER_RULES = 'No fare_transfer_rules.txt was found, will assume no fare_transfer_rules exist.'
 UNUSED_LEG_GROUPS = 'Leg groups defined in fare_leg_rules.txt are unused in fare_transfer_rules.txt.'
+TRANSFER_COUNT_WITH_EMPTY_LEGS = 'An entry in fare_transfer_rules.txt has transfer_count with empty from and to leg group ids. This may create undefined behaviour.'
