@@ -4,9 +4,9 @@ invalid_leg_group_id,1,1,,,,,,,,,,,,,1
 1,,1,,,,2,,,,,,,,,1
 1,1,1,,,,invalid_transfer_count,,,,,,,,,1
 1,1,1,,,,0,,,,,,,,,1
-1,1,1,,,,,,,1,invalid_duration_limit_type,,,,,1
-1,1,1,,,,,,,1,,,,,,1
-1,1,1,,,,,,,invalid_duration_limit,1,,,,,1
-1,1,1,,,,,,,,1,,,,,1
-1,1,1,,,,,,,,,3.00,,,USD,invalid_fare_transfer_type
-1,1,1,invalid_fare_product_id,,,,,,,,,,,,
+1,1,1,,,,1,,,1,invalid_duration_limit_type,,,,,1
+1,1,1,,,,1,,,1,,,,,,1
+1,1,1,,,,1,,,invalid_duration_limit,1,,,,,1
+1,1,1,,,,1,,,,1,,,,,1
+1,1,1,,,,1,,,,,3.00,,,USD,invalid_fare_transfer_type
+1,1,1,invalid_fare_product_id,,,1,,,,,,,,,
