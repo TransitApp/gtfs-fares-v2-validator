@@ -26,6 +26,8 @@ def check_transfer_count(line):
                 line.add_error(INVALID_TRANSFER_COUNT)
         except ValueError:
             line.add_error(INVALID_TRANSFER_COUNT)
+    elif line.from_leg_group_id == line.to_leg_group_id:
+        line.add_error(EMPTY_TRANSFER_COUNT)
 
 
 def check_durations(line):

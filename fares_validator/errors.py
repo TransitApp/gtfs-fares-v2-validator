@@ -83,6 +83,7 @@ INVALID_DURATION_LIMIT_TYPE = 'An entry in fare_transfer_rules.txt has duration_
 INVALID_FARE_TRANSFER_TYPE = 'An entry in fare_transfer_rules.txt has fare_transfer_type with invalid value.'
 INVALID_FROM_LEG_GROUP = 'A from_leg_group_id in fare_transfer_rules.txt is not defined in fare_leg_rules.txt.'
 INVALID_TRANSFER_COUNT = 'An entry in fare_transfer_rules.txt has transfer_count with incorrect type or invalid integer value.'
+EMPTY_TRANSFER_COUNT = 'An entry in fare_transfer_rules.txt has no transfer_count defined, but the from_ and to_ leg_group_ids are the same.'
 INVALID_TO_LEG_GROUP = 'A to_leg_group_id in fare_transfer_rules.txt is not defined in fare_leg_rules.txt.'
 NONEXISTENT_FILTER_FARE_PRODUCT_ID = 'A filter_fare_product referenced is not defined in fare_products.txt.'
 TRANSFER_COUNT_WITH_BAD_LEGS = 'An entry in fare_transfer_rules.txt has transfer_count with different from and to leg group ids.'
