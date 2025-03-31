@@ -1,3 +1,7 @@
+# Fares have been added to the MobilityData validator, you should use this instead
+### https://github.com/MobilityData/gtfs-validator
+
+--------------
 # gtfs-fares-v2-validator
 
 This is a tool to validate fares-v2 GTFS datasets.
